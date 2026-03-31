@@ -5,8 +5,7 @@ import io.ktor.http.Url
 private const val URL_PATTERN =
     """(https?://)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z][a-zA-Z0-9()]{0,5}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)"""
 
-private val DefaultUrlRegex = Regex(URL_PATTERN)
-private val regex: Regex = DefaultUrlRegex
+private val regex = Regex(URL_PATTERN)
 
 /**
  * 提取文本中的链接
