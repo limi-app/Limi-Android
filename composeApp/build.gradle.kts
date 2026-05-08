@@ -24,7 +24,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.room.sqlite.wrapper)
             implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
             implementation("androidx.core:core-splashscreen:1.2.0")
             implementation("androidx.activity:activity-ktx:1.12.1")
             implementation("androidx.browser:browser:1.9.0")
