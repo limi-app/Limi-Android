@@ -65,6 +65,7 @@ import limi.shared.generated.resources.confirm
 import limi.shared.generated.resources.copy
 import limi.shared.generated.resources.discard_and_back
 import limi.shared.generated.resources.edit_original_text
+import limi.shared.generated.resources.edit_original_text_placeholder
 import limi.shared.generated.resources.input_string_is_empty
 import limi.shared.generated.resources.processing_results
 import limi.shared.generated.resources.share
@@ -166,6 +167,7 @@ private fun EditingContent(
             value = editText,
             onValueChange = onEditTextChange,
             label = { Text(stringResource(Res.string.edit_original_text)) },
+            placeholder = { Text(stringResource(Res.string.edit_original_text_placeholder)) },
             modifier = Modifier.fillMaxWidth(),
             textStyle = MaterialTheme.typography.bodyMedium,
             minLines = 1,
