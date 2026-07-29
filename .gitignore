@@ -20,3 +20,9 @@ node_modules/
 
 /composeApp/release/
 /composeApp/schemas/
+
+/androidApp/release/
+/androidApp/schemas/
+
+/shared/release/
+/shared/schemas/
