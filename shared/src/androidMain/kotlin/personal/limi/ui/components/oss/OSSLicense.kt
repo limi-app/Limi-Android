@@ -107,10 +107,11 @@ fun LicenseItem(
         }
 
         // 描述信息
-        if (!library.description.isNullOrBlank()) {
+        val description = library.description
+        if (!description.isNullOrBlank()) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = library.description!!,
+                text = description,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
