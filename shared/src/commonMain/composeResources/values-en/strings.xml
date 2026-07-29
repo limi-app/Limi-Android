@@ -47,4 +47,5 @@
     <string name="x_rule">X (formerly Twitter)</string>
     <string name="about_limi">About Limi</string>
     <string name="about_limi_version">Version: %1$s</string>
+    <string name="edit_original_text_placeholder">Input or paste text containing links</string>
 </resources>
