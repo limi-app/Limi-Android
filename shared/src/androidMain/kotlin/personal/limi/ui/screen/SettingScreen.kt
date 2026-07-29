@@ -31,8 +31,8 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.about
-import limi.shared.generated.resources.aboutLimi
-import limi.shared.generated.resources.aboutLimiVersion
+import limi.shared.generated.resources.about_limi
+import limi.shared.generated.resources.about_limi_version
 import limi.shared.generated.resources.general
 import limi.shared.generated.resources.incognito_mode
 import limi.shared.generated.resources.incognito_mode_desc
@@ -115,10 +115,12 @@ fun SettingScreen(
                 }
             }
             item {
+                val aboutLimi = stringResource(Res.string.about_limi)
+                val aboutLimiVersion = stringResource(Res.string.about_limi_version, appVersion)
                 PreferenceGroup(stringResource(Res.string.about)) {
                     navigation(
-                        title = Res.string.aboutLimi,
-                        summary = Res.string.aboutLimiVersion.format(appVersion = appVersion),
+                        title = aboutLimi,
+                        summary = aboutLimiVersion,
                         showArrow = false,
                         onClick = {})
                     navigation(

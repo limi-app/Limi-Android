@@ -82,3 +82,9 @@ aboutLibraries {
         outputPath = file("src/commonMain/composeResources/files/aboutlibraries.json")
     }
 }
+
+tasks.matching {
+    it.name == "generateComposeResClass" || it.name == "copyNonXmlValueResourcesForCommonMain"
+}.configureEach {
+    dependsOn("exportLibraryDefinitions")
+}

@@ -45,6 +45,6 @@
     <string name="select_from_gallery">从图库选择</string>
     <string name="no_qr_code_found">未在图片中找到二维码</string>
     <string name="x_rule">X（原 Twitter）</string>
-    <string name="aboutLimi">关于 Limi</string>
-    <string name="aboutLimiVersion">版本：{appVersion}</string>
+    <string name="about_limi">关于 Limi</string>
+    <string name="about_limi_version">版本：%1$s</string>
 </resources>
