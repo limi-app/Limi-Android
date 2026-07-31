@@ -90,4 +90,17 @@ class DebounceTest {
         val url = Url("https://ouo.today/x?cr=aHR0cHM6Ly9leGFtcGxlLmNvbS9wYWdl")
         assertEquals("https://example.com/page", processDebounce(url, rules)?.toString())
     }
+
+    @Test
+    fun base64RedirectUrlSafeUnpadded() {
+        val rules = listOf(
+            DebounceRule(
+                include = listOf("*://*.ouo.today/*"),
+                action = "base64,redirect",
+                param = "cr"
+            )
+        )
+        val url = Url("https://ouo.today/x?cr=aHR0cHM6Ly9leGFtcGxlLmNvbS8_a2V5PXZhbHVlJmZvbz1iYXI")
+        assertEquals("https://example.com/?key=value&foo=bar", processDebounce(url, rules)?.toString())
+    }
 }

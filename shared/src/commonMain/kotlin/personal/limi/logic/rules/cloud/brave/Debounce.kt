@@ -85,8 +85,15 @@ private fun buildTargetUrl(raw: String): Url? {
 }
 
 private fun decodeBase64Url(raw: String): String? {
+    val trimmed = raw.trim()
+    if (trimmed.isEmpty()) return null
     return try {
-        Base64.decode(raw).decodeToString()
+        val normalized = trimmed
+            .replace('-', '+')
+            .replace('_', '/')
+        val paddingNeeded = (4 - normalized.length % 4) % 4
+        val padded = if (paddingNeeded > 0) normalized + "=".repeat(paddingNeeded) else normalized
+        Base64.decode(padded).decodeToString()
     } catch (_: Exception) {
         null
     }
