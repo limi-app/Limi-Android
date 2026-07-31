@@ -6,11 +6,15 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import personal.limi.data.model.LimiHistoryEntity
 import personal.limi.logic.RuleIds
+import personal.limi.logic.rules.cloud.CloudRuleKeys
+import personal.limi.logic.rules.cloud.CloudRuleRepository
 import personal.limi.ui.screen.SettingIds
 import personal.limi.ui.share_panel.SharePanelActivity
 import personal.limi.utils.DatabaseHolder
@@ -25,8 +29,6 @@ class MainViewModel() : ViewModel() {
     val historyListStateFlow: StateFlow<List<LimiHistoryEntity>> =
         dao.getAllAsFlowSortedByDatetimeDesc().asState(viewModelScope, emptyList())
 
-    val isCommonParamsRuleEnabled = DataStorePreferences.getBooleanFlow(RuleIds.COMMON_PARAMS, true)
-        .asState(viewModelScope, true)
     val isUTMParamsRuleEnabled =
         DataStorePreferences.getBooleanFlow(RuleIds.UTM_PARAMS, true).asState(viewModelScope, true)
     val isUTMParamsEnhancedRuleEnabled =
@@ -36,9 +38,18 @@ class MainViewModel() : ViewModel() {
         DataStorePreferences.getBooleanFlow(RuleIds.BILIBILI, true).asState(viewModelScope, true)
     val isXRuleEnabled = DataStorePreferences.getBooleanFlow(RuleIds.X, true)
         .asState(viewModelScope, true)
+    val isFirefoxQueryStrippingRuleEnabled =
+        DataStorePreferences.getBooleanFlow(RuleIds.FIREFOX_QUERY_STRIPPING, false)
+            .asState(viewModelScope, false)
+    val cloudRulesVersionTime = DataStorePreferences.getLongFlow(
+        CloudRuleKeys.QUERY_STRIPPING_LAST_MODIFIED, 0L
+    ).asState(viewModelScope, 0L)
 
-    fun setCommonParamsRuleEnabled(bool: Boolean) =
-        DataStorePreferences.putBooleanSync(RuleIds.COMMON_PARAMS, bool)
+    private val _isSyncingCloudRules = MutableStateFlow(false)
+    val isSyncingCloudRules: StateFlow<Boolean> = _isSyncingCloudRules.asStateFlow()
+
+    private val _cloudRulesSyncFailed = MutableStateFlow(false)
+    val cloudRulesSyncFailed: StateFlow<Boolean> = _cloudRulesSyncFailed.asStateFlow()
 
     fun setUTMParamsRuleEnabled(bool: Boolean) =
         DataStorePreferences.putBooleanSync(RuleIds.UTM_PARAMS, bool)
@@ -51,6 +62,29 @@ class MainViewModel() : ViewModel() {
 
     fun setXRuleEnabled(bool: Boolean) =
         DataStorePreferences.putBooleanSync(RuleIds.X, bool)
+
+    fun setFirefoxQueryStrippingRuleEnabled(bool: Boolean) =
+        DataStorePreferences.putBooleanSync(RuleIds.FIREFOX_QUERY_STRIPPING, bool)
+
+    fun syncCloudRules() {
+        if (_isSyncingCloudRules.value) return
+        viewModelScope.launch(Dispatchers.IO) {
+            _isSyncingCloudRules.value = true
+            try {
+                if (isFirefoxQueryStrippingRuleEnabled.value) {
+                    CloudRuleRepository.syncQueryStripping()
+                }
+            } catch (_: Exception) {
+                _cloudRulesSyncFailed.value = true
+            } finally {
+                _isSyncingCloudRules.value = false
+            }
+        }
+    }
+
+    fun dismissCloudRulesSyncError() {
+        _cloudRulesSyncFailed.value = false
+    }
 
     val isIncreognitoModeEnabled =
         DataStorePreferences.getBooleanFlow(SettingIds.INCOGNITO_MODE, false)

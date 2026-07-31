@@ -6,7 +6,8 @@ import personal.limi.logic.rules.bilibili.bilibiliNoParamsTargetHost
 import personal.limi.logic.rules.bilibili.bilibiliRedirectTargetHost
 import personal.limi.logic.rules.bilibili.processBilibiliNoParamsUrl
 import personal.limi.logic.rules.bilibili.processBilibiliRedirectUrl
-import personal.limi.logic.rules.common.processCommonParams
+import personal.limi.logic.rules.cloud.CloudRuleKeys
+import personal.limi.logic.rules.cloud.processQueryStripping
 import personal.limi.logic.rules.common.processUTMParams
 import personal.limi.logic.rules.common.processUTMParamsEnhanced
 import personal.limi.logic.rules.x.processXNoParamsUrl
@@ -15,20 +16,20 @@ import personal.limi.utils.datastore.DataStorePreferences
 
 object RuleIds {
     const val BILIBILI = "bilibili_rules"
-    const val COMMON_PARAMS = "common_params_rules"
     const val UTM_PARAMS = "utm_params_rules"
     const val UTM_PARAMS_ENHANCED = "utm_params_enhanced_rules"
     const val X = "x_rules"
+    const val FIREFOX_QUERY_STRIPPING = "firefox_query_stripping_rules"
 }
 
 suspend fun processUrl(urlString: String): String {
 
     val ruleConfig = RuleConfig(
-        commonParams = DataStorePreferences.getBoolean(RuleIds.COMMON_PARAMS, true),
         UTMParams = DataStorePreferences.getBoolean(RuleIds.UTM_PARAMS, true),
         UTMParamsEnhanced = DataStorePreferences.getBoolean(RuleIds.UTM_PARAMS_ENHANCED, false),
         bilibili = DataStorePreferences.getBoolean(RuleIds.BILIBILI, true),
-        x = DataStorePreferences.getBoolean(RuleIds.X, true)
+        x = DataStorePreferences.getBoolean(RuleIds.X, true),
+        firefoxQueryStripping = DataStorePreferences.getBoolean(RuleIds.FIREFOX_QUERY_STRIPPING, false)
     )
 
     var finalUrl = Url(urlString)
@@ -51,9 +52,16 @@ suspend fun processUrl(urlString: String): String {
     }
 
     // 第二层：通用参数去除处理
-    if (ruleConfig.commonParams) finalUrl = processCommonParams(finalUrl)
     if (ruleConfig.UTMParams) finalUrl = processUTMParams(finalUrl)
     if (ruleConfig.UTMParamsEnhanced) finalUrl = processUTMParamsEnhanced(finalUrl)
+    if (ruleConfig.firefoxQueryStripping) {
+        val stripList = DataStorePreferences.getStringSet(CloudRuleKeys.QUERY_STRIPPING_STRIP_LIST, emptySet())
+        if (stripList.isNotEmpty()) {
+            val allowList =
+                DataStorePreferences.getStringSet(CloudRuleKeys.QUERY_STRIPPING_ALLOW_LIST, emptySet())
+            finalUrl = processQueryStripping(finalUrl, stripList, allowList)
+        }
+    }
 
     val finalUrlString = finalUrl.toString()
     return finalUrlString.ifEmpty { urlString }
