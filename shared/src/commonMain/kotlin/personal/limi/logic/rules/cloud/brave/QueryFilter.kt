@@ -1,7 +1,7 @@
 package personal.limi.logic.rules.cloud.brave
 
 import io.ktor.http.Url
-import kotlinx.serialization.json.Json
+import personal.limi.logic.rules.cloud.cloudRulesJson
 
 object QueryFilterRuleKeys {
     const val RULES = "cloud_brave_query_filter_rules"
@@ -9,7 +9,7 @@ object QueryFilterRuleKeys {
 }
 
 fun parseQueryFilter(body: String): List<BraveQueryRule> =
-    Json { ignoreUnknownKeys = true }.decodeFromString(body)
+    cloudRulesJson.decodeFromString(body)
 
 fun decodeQueryFilterRules(raw: String): List<BraveQueryRule> =
     if (raw.isBlank()) emptyList() else parseQueryFilter(raw)

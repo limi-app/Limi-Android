@@ -4,8 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import personal.limi.logic.rules.cloud.brave.BraveQueryRule
 import personal.limi.logic.rules.cloud.brave.CleanUrlsRuleKeys
 import personal.limi.logic.rules.cloud.brave.DebounceRuleKeys
@@ -60,7 +58,7 @@ object CloudRuleRepository {
     suspend fun syncDebounce() {
         val body = client.get(BRAVE_DEBOUNCE_URL).bodyAsText()
         val rules = parseDebounce(body)
-        DataStorePreferences.putString(DebounceRuleKeys.RULES, Json.encodeToString(rules))
+        DataStorePreferences.putString(DebounceRuleKeys.RULES, cloudRulesJson.encodeToString(rules))
         DataStorePreferences.putString(DebounceRuleKeys.VERSION_HASH, contentHash(body))
     }
 
@@ -72,7 +70,7 @@ object CloudRuleRepository {
     ) {
         val body = client.get(url).bodyAsText()
         val rules = parser(body)
-        DataStorePreferences.putString(rulesKey, Json.encodeToString(rules))
+        DataStorePreferences.putString(rulesKey, cloudRulesJson.encodeToString(rules))
         DataStorePreferences.putString(versionKey, contentHash(body))
     }
 

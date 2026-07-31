@@ -1,7 +1,7 @@
 package personal.limi.logic.rules.cloud.brave
 
 import io.ktor.http.Url
-import kotlinx.serialization.json.Json
+import personal.limi.logic.rules.cloud.cloudRulesJson
 
 object CleanUrlsRuleKeys {
     const val RULES = "cloud_brave_clean_urls_rules"
@@ -9,7 +9,7 @@ object CleanUrlsRuleKeys {
 }
 
 fun parseCleanUrls(body: String): List<BraveQueryRule> =
-    Json { ignoreUnknownKeys = true }.decodeFromString(body)
+    cloudRulesJson.decodeFromString(body)
 
 fun decodeCleanUrlsRules(raw: String): List<BraveQueryRule> =
     if (raw.isBlank()) emptyList() else parseCleanUrls(raw)

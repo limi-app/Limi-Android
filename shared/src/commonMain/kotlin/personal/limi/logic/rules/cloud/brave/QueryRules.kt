@@ -4,22 +4,25 @@ import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import kotlinx.serialization.Serializable
-import personal.limi.logic.rules.cloud.matchesPattern
+import personal.limi.logic.rules.cloud.UrlPattern
 
 @Serializable
 data class BraveQueryRule(
     val include: List<String> = emptyList(),
     val exclude: List<String> = emptyList(),
     val params: List<String> = emptyList(),
-)
+) {
+    val compiledInclude: List<UrlPattern> by lazy { include.map { UrlPattern.compile(it) } }
+    val compiledExclude: List<UrlPattern> by lazy { exclude.map { UrlPattern.compile(it) } }
+}
 
-fun ruleMatches(url: Url, include: List<String>, exclude: List<String>): Boolean =
-    include.any { matchesPattern(url, it) } && exclude.none { matchesPattern(url, it) }
+fun ruleMatches(url: Url, include: List<UrlPattern>, exclude: List<UrlPattern>): Boolean =
+    include.any { it.matches(url) } && exclude.none { it.matches(url) }
 
 fun processQueryRules(url: Url, rules: List<BraveQueryRule>): Url {
     val paramsToRemove = mutableSetOf<String>()
     for (rule in rules) {
-        if (ruleMatches(url, rule.include, rule.exclude)) {
+        if (ruleMatches(url, rule.compiledInclude, rule.compiledExclude)) {
             paramsToRemove += rule.params.map { it.lowercase() }
         }
     }

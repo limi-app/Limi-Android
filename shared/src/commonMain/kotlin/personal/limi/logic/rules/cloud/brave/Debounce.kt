@@ -2,7 +2,9 @@ package personal.limi.logic.rules.cloud.brave
 
 import io.ktor.http.Url
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import kotlin.io.encoding.Base64
+import personal.limi.logic.rules.cloud.UrlPattern
+import personal.limi.logic.rules.cloud.cloudRulesJson
 
 object DebounceRuleKeys {
     const val RULES = "cloud_brave_debounce_rules"
@@ -17,17 +19,20 @@ data class DebounceRule(
     val param: String? = null,
     val prepend_scheme: String? = null,
     val redirect_url_template: String? = null,
-)
+) {
+    val compiledInclude: List<UrlPattern> by lazy { include.map { UrlPattern.compile(it) } }
+    val compiledExclude: List<UrlPattern> by lazy { exclude.map { UrlPattern.compile(it) } }
+}
 
 fun parseDebounce(body: String): List<DebounceRule> =
-    Json { ignoreUnknownKeys = true }.decodeFromString(body)
+    cloudRulesJson.decodeFromString(body)
 
 fun decodeDebounceRules(raw: String): List<DebounceRule> =
     if (raw.isBlank()) emptyList() else parseDebounce(raw)
 
 fun processDebounce(url: Url, rules: List<DebounceRule>): Url? {
     for (rule in rules) {
-        if (!ruleMatches(url, rule.include, rule.exclude)) continue
+        if (!ruleMatches(url, rule.compiledInclude, rule.compiledExclude)) continue
         val target = resolveDebounceTarget(url, rule) ?: continue
         return target
     }
@@ -37,8 +42,8 @@ fun processDebounce(url: Url, rules: List<DebounceRule>): Url? {
 private fun resolveDebounceTarget(url: Url, rule: DebounceRule): Url? {
     val action = rule.action ?: return null
     return try {
-        when {
-            action == "redirect" || action == "base64,redirect" -> {
+        when (action) {
+            "redirect", "base64,redirect" -> {
                 val param = rule.param ?: return null
                 val raw = url.parameters[param] ?: return null
                 if (raw.isBlank()) return null
@@ -46,8 +51,7 @@ private fun resolveDebounceTarget(url: Url, rule: DebounceRule): Url? {
                 val target = decoded ?: return null
                 buildTargetUrl(target)
             }
-
-            action == "regex-path" || action == "regex-path-template" -> {
+            "regex-path", "regex-path-template" -> {
                 val regex = rule.param ?: return null
                 val match = Regex(regex).find(url.encodedPath) ?: return null
                 val captures = match.groupValues.drop(1)
@@ -59,12 +63,11 @@ private fun resolveDebounceTarget(url: Url, rule: DebounceRule): Url? {
                     val template = rule.redirect_url_template ?: return null
                     var result = template
                     captures.forEachIndexed { index, value ->
-                        result = result.replace("\$${index + 1}", value)
+                        result = result.replace($$"$$${index + 1}", value)
                     }
                     buildTargetUrl(result)
                 }
             }
-
             else -> null
         }
     } catch (_: Exception) {
@@ -83,7 +86,7 @@ private fun buildTargetUrl(raw: String): Url? {
 
 private fun decodeBase64Url(raw: String): String? {
     return try {
-        kotlin.io.encoding.Base64.Default.decode(raw).decodeToString()
+        Base64.decode(raw).decodeToString()
     } catch (_: Exception) {
         null
     }
