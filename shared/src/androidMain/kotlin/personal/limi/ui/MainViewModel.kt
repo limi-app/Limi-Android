@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,6 +52,9 @@ class MainViewModel() : ViewModel() {
     private val _cloudRulesSyncFailed = MutableStateFlow(false)
     val cloudRulesSyncFailed: StateFlow<Boolean> = _cloudRulesSyncFailed.asStateFlow()
 
+    private val _cloudRulesSyncErrorMessage = MutableStateFlow<String?>(null)
+    val cloudRulesSyncErrorMessage: StateFlow<String?> = _cloudRulesSyncErrorMessage.asStateFlow()
+
     fun setUTMParamsRuleEnabled(bool: Boolean) =
         DataStorePreferences.putBooleanSync(RuleIds.UTM_PARAMS, bool)
 
@@ -74,8 +78,9 @@ class MainViewModel() : ViewModel() {
                 if (isFirefoxQueryStrippingRuleEnabled.value) {
                     CloudRuleRepository.syncQueryStripping()
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 _cloudRulesSyncFailed.value = true
+                _cloudRulesSyncErrorMessage.value = if (e is IOException) null else e.message
             } finally {
                 _isSyncingCloudRules.value = false
             }
@@ -84,6 +89,7 @@ class MainViewModel() : ViewModel() {
 
     fun dismissCloudRulesSyncError() {
         _cloudRulesSyncFailed.value = false
+        _cloudRulesSyncErrorMessage.value = null
     }
 
     val isIncreognitoModeEnabled =

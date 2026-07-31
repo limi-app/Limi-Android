@@ -1,2 +1,2 @@
-> 请保留此行以实现 @sourcery-ai 自动生成 PR 标题。
+> 请在标题填入 `@sourcery-ai` 以自动生成 PR 标题。
 

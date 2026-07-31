@@ -17,20 +17,21 @@ object CloudRuleRepository {
     const val QUERY_STRIPPING_URL =
         "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/query-stripping/records"
 
+    private val client = HttpClient(CIO) {
+        expectSuccess = true
+    }
+
     suspend fun syncQueryStripping() {
-        val client = HttpClient(CIO) {
-            expectSuccess = true
-        }
-        try {
-            val body = client.get(QUERY_STRIPPING_URL).bodyAsText()
-            val data = parseQueryStrippingRecords(body)
-            DataStorePreferences.putStringSet(CloudRuleKeys.QUERY_STRIPPING_STRIP_LIST, data.stripList)
-            DataStorePreferences.putStringSet(CloudRuleKeys.QUERY_STRIPPING_ALLOW_LIST, data.allowList)
-            DataStorePreferences.putLong(
-                CloudRuleKeys.QUERY_STRIPPING_LAST_MODIFIED, data.lastModified
-            )
-        } finally {
-            client.close()
-        }
+        val body = client.get(QUERY_STRIPPING_URL).bodyAsText()
+        val data = parseQueryStrippingRecords(body)
+        DataStorePreferences.putStringSet(CloudRuleKeys.QUERY_STRIPPING_STRIP_LIST, data.stripList)
+        DataStorePreferences.putStringSet(CloudRuleKeys.QUERY_STRIPPING_ALLOW_LIST, data.allowList)
+        DataStorePreferences.putLong(
+            CloudRuleKeys.QUERY_STRIPPING_LAST_MODIFIED, data.lastModified
+        )
+    }
+
+    fun close() {
+        client.close()
     }
 }

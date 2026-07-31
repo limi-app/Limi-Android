@@ -120,6 +120,7 @@ fun RuleScreen(
     }
     val isSyncing by viewModel.isSyncingCloudRules.collectAsState()
     val cloudRulesSyncFailed by viewModel.cloudRulesSyncFailed.collectAsState()
+    val cloudRulesSyncErrorMessage by viewModel.cloudRulesSyncErrorMessage.collectAsState()
     val cloudRulesEnabled = firefoxRuleEnabled
 
     Scaffold(
@@ -195,7 +196,13 @@ fun RuleScreen(
         AlertDialog(
             onDismissRequest = { viewModel.dismissCloudRulesSyncError() },
             title = { Text(text = stringResource(Res.string.sync_rules_failed_title)) },
-            text = { Text(text = stringResource(Res.string.sync_rules_failed_message)) },
+            text = {
+                val message = cloudRulesSyncErrorMessage
+                Text(
+                    text = message?.takeIf { it.isNotBlank() }
+                        ?: stringResource(Res.string.sync_rules_failed_message)
+                )
+            },
             confirmButton = {
                 TextButton(onClick = { viewModel.dismissCloudRulesSyncError() }) {
                     Text(text = stringResource(Res.string.confirm))
