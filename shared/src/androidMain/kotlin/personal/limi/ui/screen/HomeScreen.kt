@@ -98,7 +98,7 @@ fun HomeScreen(viewModel: MainViewModel = viewModel { MainViewModel() }) {
             listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset <= 0
         }
     }
-    val focusRequester = FocusRequester()
+    val focusRequester = remember { FocusRequester() }
     val context = LocalContext.current
     val layoutDirection = LocalLayoutDirection.current
     val historyList by viewModel.historyListStateFlow.collectAsState()
