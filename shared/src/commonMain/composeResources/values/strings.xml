@@ -27,6 +27,9 @@
     <string name="exceptional_rules_group">特殊规则</string>
     <string name="cloud_rules_group">云端规则</string>
     <string name="firefox_query_stripping_rule">Firefox Query Parameter Stripping</string>
+    <string name="brave_clean_urls_rule">Brave Clean Urls</string>
+    <string name="brave_debounce_rule">Brave Debounce</string>
+    <string name="brave_query_filter_rule">Brave Query Filter</string>
     <string name="sync_rules">同步规则</string>
     <string name="sync_rules_failed_title">同步失败</string>
     <string name="sync_rules_failed_message">同步云端规则失败，请检查网络连接后重试</string>
@@ -50,7 +53,6 @@
     <string name="open_source_license">开放源代码许可</string>
     <string name="select_from_gallery">从图库选择</string>
     <string name="no_qr_code_found">未在图片中找到二维码</string>
-    <string name="x_rule">X（原 Twitter）</string>
     <string name="about_limi">关于 Limi</string>
     <string name="about_limi_version">版本：%1$s</string>
     <string name="edit_original_text_placeholder">输入或粘贴包含链接的文本</string>
