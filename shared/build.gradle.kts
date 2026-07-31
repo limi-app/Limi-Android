@@ -52,6 +52,7 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
             implementation(libs.pangu)
+            implementation(libs.kotlincrypto.hash.sha2)
             implementation(libs.aboutlibraries.core)
             implementation(libs.aboutlibraries.compose.m3)
         }

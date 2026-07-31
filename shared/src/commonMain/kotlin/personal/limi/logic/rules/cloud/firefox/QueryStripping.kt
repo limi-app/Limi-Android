@@ -1,10 +1,16 @@
-package personal.limi.logic.rules.cloud
+package personal.limi.logic.rules.cloud.firefox
 
 import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import personal.limi.logic.rules.cloud.cloudRulesJson
+
+object FirefoxRuleKeys {
+    const val QUERY_STRIPPING_STRIP_LIST = "cloud_query_stripping_strip_list"
+    const val QUERY_STRIPPING_ALLOW_LIST = "cloud_query_stripping_allow_list"
+    const val QUERY_STRIPPING_LAST_MODIFIED = "cloud_query_stripping_last_modified"
+}
 
 @Serializable
 data class QueryStrippingRecord(
@@ -25,7 +31,7 @@ data class QueryStrippingData(
 )
 
 fun parseQueryStrippingRecords(body: String): QueryStrippingData {
-    val response = Json { ignoreUnknownKeys = true }.decodeFromString<QueryStrippingResponse>(body)
+    val response = cloudRulesJson.decodeFromString<QueryStrippingResponse>(body)
     return QueryStrippingData(
         stripList = response.data.flatMap { it.stripList }.map { it.lowercase() }.toSet(),
         allowList = response.data.flatMap { it.allowList }.map { it.lowercase() }.toSet(),

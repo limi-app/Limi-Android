@@ -14,8 +14,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import personal.limi.data.model.LimiHistoryEntity
 import personal.limi.logic.RuleIds
-import personal.limi.logic.rules.cloud.CloudRuleKeys
 import personal.limi.logic.rules.cloud.CloudRuleRepository
+import personal.limi.logic.rules.cloud.brave.CleanUrlsRuleKeys
+import personal.limi.logic.rules.cloud.brave.DebounceRuleKeys
+import personal.limi.logic.rules.cloud.brave.QueryFilterRuleKeys
+import personal.limi.logic.rules.cloud.firefox.FirefoxRuleKeys
 import personal.limi.ui.screen.SettingIds
 import personal.limi.ui.share_panel.SharePanelActivity
 import personal.limi.utils.DatabaseHolder
@@ -37,14 +40,30 @@ class MainViewModel() : ViewModel() {
             .asState(viewModelScope, false)
     val isBilibiliRuleEnabled =
         DataStorePreferences.getBooleanFlow(RuleIds.BILIBILI, true).asState(viewModelScope, true)
-    val isXRuleEnabled = DataStorePreferences.getBooleanFlow(RuleIds.X, true)
-        .asState(viewModelScope, true)
     val isFirefoxQueryStrippingRuleEnabled =
         DataStorePreferences.getBooleanFlow(RuleIds.FIREFOX_QUERY_STRIPPING, false)
             .asState(viewModelScope, false)
+    val isBraveCleanUrlsRuleEnabled =
+        DataStorePreferences.getBooleanFlow(RuleIds.BRAVE_CLEAN_URLS, false)
+            .asState(viewModelScope, false)
+    val isBraveDebounceRuleEnabled =
+        DataStorePreferences.getBooleanFlow(RuleIds.BRAVE_DEBOUNCE, false)
+            .asState(viewModelScope, false)
+    val isBraveQueryFilterRuleEnabled =
+        DataStorePreferences.getBooleanFlow(RuleIds.BRAVE_QUERY_FILTER, false)
+            .asState(viewModelScope, false)
     val cloudRulesVersionTime = DataStorePreferences.getLongFlow(
-        CloudRuleKeys.QUERY_STRIPPING_LAST_MODIFIED, 0L
+        FirefoxRuleKeys.QUERY_STRIPPING_LAST_MODIFIED, 0L
     ).asState(viewModelScope, 0L)
+    val braveCleanUrlsVersionHash = DataStorePreferences.getStringFlow(
+        CleanUrlsRuleKeys.VERSION_HASH, ""
+    ).asState(viewModelScope, "")
+    val braveDebounceVersionHash = DataStorePreferences.getStringFlow(
+        DebounceRuleKeys.VERSION_HASH, ""
+    ).asState(viewModelScope, "")
+    val braveQueryFilterVersionHash = DataStorePreferences.getStringFlow(
+        QueryFilterRuleKeys.VERSION_HASH, ""
+    ).asState(viewModelScope, "")
 
     private val _isSyncingCloudRules = MutableStateFlow(false)
     val isSyncingCloudRules: StateFlow<Boolean> = _isSyncingCloudRules.asStateFlow()
@@ -64,11 +83,17 @@ class MainViewModel() : ViewModel() {
     fun setBilibiliRuleEnabled(bool: Boolean) =
         DataStorePreferences.putBooleanSync(RuleIds.BILIBILI, bool)
 
-    fun setXRuleEnabled(bool: Boolean) =
-        DataStorePreferences.putBooleanSync(RuleIds.X, bool)
-
     fun setFirefoxQueryStrippingRuleEnabled(bool: Boolean) =
         DataStorePreferences.putBooleanSync(RuleIds.FIREFOX_QUERY_STRIPPING, bool)
+
+    fun setBraveCleanUrlsRuleEnabled(bool: Boolean) =
+        DataStorePreferences.putBooleanSync(RuleIds.BRAVE_CLEAN_URLS, bool)
+
+    fun setBraveDebounceRuleEnabled(bool: Boolean) =
+        DataStorePreferences.putBooleanSync(RuleIds.BRAVE_DEBOUNCE, bool)
+
+    fun setBraveQueryFilterRuleEnabled(bool: Boolean) =
+        DataStorePreferences.putBooleanSync(RuleIds.BRAVE_QUERY_FILTER, bool)
 
     fun syncCloudRules() {
         if (_isSyncingCloudRules.value) return
@@ -76,7 +101,16 @@ class MainViewModel() : ViewModel() {
             _isSyncingCloudRules.value = true
             try {
                 if (isFirefoxQueryStrippingRuleEnabled.value) {
-                    CloudRuleRepository.syncQueryStripping()
+                    CloudRuleRepository.syncFirefoxQueryStripping()
+                }
+                if (isBraveCleanUrlsRuleEnabled.value) {
+                    CloudRuleRepository.syncCleanUrls()
+                }
+                if (isBraveDebounceRuleEnabled.value) {
+                    CloudRuleRepository.syncDebounce()
+                }
+                if (isBraveQueryFilterRuleEnabled.value) {
+                    CloudRuleRepository.syncQueryFilter()
                 }
             } catch (e: Exception) {
                 _cloudRulesSyncFailed.value = true

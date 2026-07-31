@@ -27,6 +27,9 @@
     <string name="exceptional_rules_group">Exceptional Rules</string>
     <string name="cloud_rules_group">Cloud Rules</string>
     <string name="firefox_query_stripping_rule">Firefox Query Parameter Stripping</string>
+    <string name="brave_clean_urls_rule">Brave Clean Urls</string>
+    <string name="brave_debounce_rule">Brave Debounce</string>
+    <string name="brave_query_filter_rule">Brave Query Filter</string>
     <string name="sync_rules">Sync Rules</string>
     <string name="sync_rules_failed_title">Sync Failed</string>
     <string name="sync_rules_failed_message">Failed to sync cloud rules. Check your network connection and try again.</string>
@@ -50,7 +53,6 @@
     <string name="open_source_license">Open Source Licenses</string>
     <string name="select_from_gallery">Select from Gallery</string>
     <string name="no_qr_code_found">No QR codes found in the image.</string>
-    <string name="x_rule">X (formerly Twitter)</string>
     <string name="about_limi">About Limi</string>
     <string name="about_limi_version">Version: %1$s</string>
     <string name="edit_original_text_placeholder">Input or paste text containing links</string>

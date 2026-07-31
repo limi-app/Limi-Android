@@ -4,8 +4,8 @@ import io.ktor.http.Url
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import personal.limi.logic.rules.cloud.parseQueryStrippingRecords
-import personal.limi.logic.rules.cloud.processQueryStripping
+import personal.limi.logic.rules.cloud.firefox.parseQueryStrippingRecords
+import personal.limi.logic.rules.cloud.firefox.processQueryStripping
 
 class QueryStrippingTest {
     @Test

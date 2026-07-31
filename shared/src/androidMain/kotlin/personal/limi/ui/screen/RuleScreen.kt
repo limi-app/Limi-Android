@@ -38,6 +38,9 @@ import org.jetbrains.compose.resources.stringResource
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.bilibili_rule
 import limi.shared.generated.resources.bilibili_rule_desc
+import limi.shared.generated.resources.brave_clean_urls_rule
+import limi.shared.generated.resources.brave_debounce_rule
+import limi.shared.generated.resources.brave_query_filter_rule
 import limi.shared.generated.resources.cloud_rules_group
 import limi.shared.generated.resources.cloud_rules_not_synced
 import limi.shared.generated.resources.cloud_rules_version
@@ -54,7 +57,6 @@ import limi.shared.generated.resources.utm_enhanced_rule
 import limi.shared.generated.resources.utm_enhanced_rule_desc
 import limi.shared.generated.resources.utm_rule
 import limi.shared.generated.resources.utm_rule_desc
-import limi.shared.generated.resources.x_rule
 import personal.limi.ui.MainViewModel
 import personal.limi.ui.components.preference.PreferenceGroup
 import personal.limi.ui.components.preference.switch
@@ -94,39 +96,77 @@ fun RuleScreen(
     val bilibiliRuleTitle = stringResource(Res.string.bilibili_rule)
     val bilibiliRuleDesc = stringResource(Res.string.bilibili_rule_desc)
     val bilibiliRuleEnabled by viewModel.isBilibiliRuleEnabled.collectAsState()
-    val xRuleTitle = stringResource(Res.string.x_rule)
-    val xRuleEnable by viewModel.isXRuleEnabled.collectAsState()
     val exceptionalRulesList = listOf(
         SwitchPreferenceItem(
             title = bilibiliRuleTitle,
             summary = bilibiliRuleDesc,
             checked = bilibiliRuleEnabled,
-            onCheckedChange = { bool -> viewModel.setBilibiliRuleEnabled(bool) }),
-        SwitchPreferenceItem(
-            title = xRuleTitle,
-            checked = xRuleEnable,
-            onCheckedChange = { bool -> viewModel.setXRuleEnabled(bool) }
-        )
+            onCheckedChange = { bool -> viewModel.setBilibiliRuleEnabled(bool) })
     )
-    val firefoxRuleTitle = stringResource(Res.string.firefox_query_stripping_rule)
-    val firefoxRuleEnabled by viewModel.isFirefoxQueryStrippingRuleEnabled.collectAsState()
-    val cloudRulesVersionTime by viewModel.cloudRulesVersionTime.collectAsState()
-    val firefoxRuleSummary = if (cloudRulesVersionTime > 0L) {
-        stringResource(
-            Res.string.cloud_rules_version,
-            formatSyncTime(
-                cloudRulesVersionTime,
-                LocalConfiguration.current.locales[0],
-                stringResource(Res.string.unknown)
-            )
-        )
-    } else {
-        stringResource(Res.string.cloud_rules_not_synced)
-    }
     val isSyncing by viewModel.isSyncingCloudRules.collectAsState()
     val cloudRulesSyncFailed by viewModel.cloudRulesSyncFailed.collectAsState()
     val cloudRulesSyncErrorMessage by viewModel.cloudRulesSyncErrorMessage.collectAsState()
-    val cloudRulesEnabled = firefoxRuleEnabled
+
+    val firefoxRuleEnabled by viewModel.isFirefoxQueryStrippingRuleEnabled.collectAsState()
+    val braveCleanUrlsEnabled by viewModel.isBraveCleanUrlsRuleEnabled.collectAsState()
+    val braveDebounceEnabled by viewModel.isBraveDebounceRuleEnabled.collectAsState()
+    val braveQueryFilterEnabled by viewModel.isBraveQueryFilterRuleEnabled.collectAsState()
+    val cloudRulesVersionTime by viewModel.cloudRulesVersionTime.collectAsState()
+    val braveCleanUrlsVersionHash by viewModel.braveCleanUrlsVersionHash.collectAsState()
+    val braveDebounceVersionHash by viewModel.braveDebounceVersionHash.collectAsState()
+    val braveQueryFilterVersionHash by viewModel.braveQueryFilterVersionHash.collectAsState()
+
+    val locale = LocalConfiguration.current.locales[0]
+    val unknownText = stringResource(Res.string.unknown)
+
+    val cloudRuleSpecs = listOf(
+        CloudRuleSpec(
+            titleResId = Res.string.firefox_query_stripping_rule,
+            enabled = firefoxRuleEnabled,
+            versionSummary = if (cloudRulesVersionTime > 0L) {
+                stringResource(
+                    Res.string.cloud_rules_version,
+                    formatSyncTime(cloudRulesVersionTime, locale, unknownText)
+                )
+            } else {
+                null
+            },
+            onCheckedChange = { bool -> viewModel.setFirefoxQueryStrippingRuleEnabled(bool) }
+        ),
+        CloudRuleSpec(
+            titleResId = Res.string.brave_clean_urls_rule,
+            enabled = braveCleanUrlsEnabled,
+            versionSummary = braveCleanUrlsVersionHash.takeIf { it.isNotBlank() }?.let {
+                stringResource(Res.string.cloud_rules_version, it.take(8))
+            },
+            onCheckedChange = { bool -> viewModel.setBraveCleanUrlsRuleEnabled(bool) }
+        ),
+        CloudRuleSpec(
+            titleResId = Res.string.brave_query_filter_rule,
+            enabled = braveQueryFilterEnabled,
+            versionSummary = braveQueryFilterVersionHash.takeIf { it.isNotBlank() }?.let {
+                stringResource(Res.string.cloud_rules_version, it.take(8))
+            },
+            onCheckedChange = { bool -> viewModel.setBraveQueryFilterRuleEnabled(bool) }
+        ),
+        CloudRuleSpec(
+            titleResId = Res.string.brave_debounce_rule,
+            enabled = braveDebounceEnabled,
+            versionSummary = braveDebounceVersionHash.takeIf { it.isNotBlank() }?.let {
+                stringResource(Res.string.cloud_rules_version, it.take(8))
+            },
+            onCheckedChange = { bool -> viewModel.setBraveDebounceRuleEnabled(bool) }
+        )
+    )
+    val cloudRulesEnabled = cloudRuleSpecs.any { it.enabled }
+    val cloudRulesList = cloudRuleSpecs.map { spec ->
+        SwitchPreferenceItem(
+            title = stringResource(spec.titleResId),
+            summary = spec.versionSummary ?: stringResource(Res.string.cloud_rules_not_synced),
+            checked = spec.enabled,
+            onCheckedChange = spec.onCheckedChange
+        )
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -173,12 +213,14 @@ fun RuleScreen(
             }
             item {
                 PreferenceGroup(stringResource(Res.string.cloud_rules_group)) {
-                    switch(
-                        title = firefoxRuleTitle,
-                        summary = firefoxRuleSummary,
-                        checked = firefoxRuleEnabled,
-                        onCheckedChange = { bool -> viewModel.setFirefoxQueryStrippingRuleEnabled(bool) }
-                    )
+                    cloudRulesList.forEach { item ->
+                        switch(
+                            title = item.title,
+                            summary = item.summary,
+                            checked = item.checked,
+                            onCheckedChange = item.onCheckedChange
+                        )
+                    }
                 }
             }
             item {
@@ -230,5 +272,12 @@ data class SwitchPreferenceItem(
     val title: String,
     val summary: String? = null,
     val checked: Boolean,
+    val onCheckedChange: (Boolean) -> Unit
+)
+
+data class CloudRuleSpec(
+    val titleResId: StringResource,
+    val enabled: Boolean,
+    val versionSummary: String?,
     val onCheckedChange: (Boolean) -> Unit
 )
