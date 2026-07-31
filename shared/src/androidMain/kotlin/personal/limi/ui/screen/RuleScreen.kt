@@ -49,6 +49,7 @@ import limi.shared.generated.resources.rule
 import limi.shared.generated.resources.sync_rules
 import limi.shared.generated.resources.sync_rules_failed_message
 import limi.shared.generated.resources.sync_rules_failed_title
+import limi.shared.generated.resources.unknown
 import limi.shared.generated.resources.utm_enhanced_rule
 import limi.shared.generated.resources.utm_enhanced_rule_desc
 import limi.shared.generated.resources.utm_rule
@@ -113,7 +114,11 @@ fun RuleScreen(
     val firefoxRuleSummary = if (cloudRulesVersionTime > 0L) {
         stringResource(
             Res.string.cloud_rules_version,
-            formatSyncTime(cloudRulesVersionTime, LocalConfiguration.current.locales[0])
+            formatSyncTime(
+                cloudRulesVersionTime,
+                LocalConfiguration.current.locales[0],
+                stringResource(Res.string.unknown)
+            )
         )
     } else {
         stringResource(Res.string.cloud_rules_not_synced)
@@ -211,13 +216,13 @@ fun RuleScreen(
     }
 }
 
-private fun formatSyncTime(epochMillis: Long, locale: Locale): String {
+private fun formatSyncTime(epochMillis: Long, locale: Locale, fallback: String = "-"): String {
     return try {
         val dateTime = Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime()
         val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(locale)
         Pangu.spacingText(dateTime.format(formatter))
     } catch (_: Exception) {
-        ""
+        fallback
     }
 }
 

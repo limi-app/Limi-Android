@@ -32,6 +32,7 @@
     <string name="sync_rules_failed_message">Failed to sync cloud rules. Check your network connection and try again.</string>
     <string name="cloud_rules_not_synced">Not synced</string>
     <string name="cloud_rules_version">Current version: %1$s</string>
+    <string name="unknown">Unknown</string>
     <string name="no_history">No history.</string>
     <string name="incognito_mode">Incognito Mode</string>
     <string name="incognito_mode_desc">New processing results will not be stored in history.</string>
