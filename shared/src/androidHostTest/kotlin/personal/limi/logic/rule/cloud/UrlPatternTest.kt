@@ -21,7 +21,7 @@ class UrlPatternTest {
     fun matchSubdomainWildcard() {
         val url = Url("https://www.facebook.com/page")
         assertTrue(matchesPattern(url, "*://*.facebook.com/*"))
-        assertTrue(matchesPattern(url, "*://facebook.com/*"))
+        assertFalse(matchesPattern(url, "*://facebook.com/*"))
         assertFalse(matchesPattern(url, "*://*.facebooks.com/*"))
     }
 

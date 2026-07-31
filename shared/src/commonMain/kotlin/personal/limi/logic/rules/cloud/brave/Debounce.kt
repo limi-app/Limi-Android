@@ -56,17 +56,21 @@ private fun resolveDebounceTarget(url: Url, rule: DebounceRule): Url? {
                 val match = Regex(regex).find(url.encodedPath) ?: return null
                 val captures = match.groupValues.drop(1)
                 if (captures.isEmpty()) return null
-                if (action == "regex-path") {
+                val raw = if (action == "regex-path") {
                     val scheme = rule.prepend_scheme ?: "https"
-                    buildTargetUrl("$scheme://${captures.joinToString("/")}")
+                    "$scheme://${captures.joinToString("/")}"
                 } else {
                     val template = rule.redirect_url_template ?: return null
                     var result = template
                     captures.forEachIndexed { index, value ->
-                        result = result.replace($$"$$${index + 1}", value)
+                        result = result.replace("$${index + 1}", value)
                     }
-                    buildTargetUrl(result)
+                    result
                 }
+                val withQuery = if (url.encodedQuery.isNotEmpty() && "?" !in raw) {
+                    "$raw?${url.encodedQuery}"
+                } else raw
+                buildTargetUrl(withQuery)
             }
             else -> null
         }

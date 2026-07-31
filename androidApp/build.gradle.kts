@@ -19,8 +19,8 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
 
-    implementation("androidx.core:core-splashscreen:1.2.0")
-    implementation("androidx.activity:activity-ktx:1.12.1")
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.activity.ktx)
 }
 
 android {
