@@ -35,6 +35,36 @@ object RuleIds {
     const val CLEAR_URLS = "clear_urls_rules"
 }
 
+private val URL_SCHEME_REGEX = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*")
+private val SCHEME_PREFIX_REGEX = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:(//)?")
+private val KNOWN_URL_SCHEMES = setOf(
+    "http", "https", "ftp", "ftps", "mailto", "tel", "file", "data", "about",
+    "ws", "wss", "sms", "ssh", "git", "chrome", "intent"
+)
+
+/**
+ * 判断链接是否自带协议头
+ */
+internal fun hasUrlScheme(urlString: String): Boolean {
+    val colonIndex = urlString.indexOf(':')
+    if (colonIndex <= 0) return false
+    val candidate = urlString.substring(0, colonIndex)
+    if (!URL_SCHEME_REGEX.matches(candidate)) return false
+    return candidate in KNOWN_URL_SCHEMES || urlString.startsWith("$candidate://")
+}
+
+/**
+ * 为不带协议的链接补全 http://，避免被解析为 http://localhost/<path>
+ */
+internal fun ensureUrlScheme(urlString: String): String =
+    if (hasUrlScheme(urlString)) urlString else "http://$urlString"
+
+/**
+ * 保持用户链接原样式：原链接不带协议头时，不输出协议头
+ */
+internal fun applyOriginalSchemeStyle(result: String, hadScheme: Boolean): String =
+    if (hadScheme) result else result.replaceFirst(SCHEME_PREFIX_REGEX, "")
+
 suspend fun processUrl(urlString: String): String {
 
     val ruleConfig = RuleConfig(
@@ -48,7 +78,8 @@ suspend fun processUrl(urlString: String): String {
         clearUrls = DataStorePreferences.getBoolean(RuleIds.CLEAR_URLS, false)
     )
 
-    var finalUrl = Url(urlString)
+    val hadScheme = hasUrlScheme(urlString)
+    var finalUrl = Url(ensureUrlScheme(urlString))
 
     // 第一层：去重定向跳转
     if (ruleConfig.braveDebounce) {
@@ -96,5 +127,5 @@ suspend fun processUrl(urlString: String): String {
     }
 
     val finalUrlString = finalUrl.toString()
-    return finalUrlString.ifEmpty { urlString }
+    return applyOriginalSchemeStyle(finalUrlString, hadScheme).ifEmpty { urlString }
 }

@@ -37,6 +37,7 @@ import limi.shared.generated.resources.general
 import limi.shared.generated.resources.incognito_mode
 import limi.shared.generated.resources.incognito_mode_desc
 import limi.shared.generated.resources.open_source_license
+import limi.shared.generated.resources.open_source_repo
 import limi.shared.generated.resources.setting
 import limi.shared.generated.resources.use_intent_filter
 import limi.shared.generated.resources.use_intent_filter_desc
@@ -45,11 +46,14 @@ import personal.limi.ui.OSSLicenseMenuActivity
 import personal.limi.ui.components.preference.PreferenceGroup
 import personal.limi.ui.components.preference.navigation
 import personal.limi.ui.components.preference.switch
+import personal.limi.utils.openUrl
 
 object SettingIds {
     const val INCOGNITO_MODE = "incognito_mode"
     const val USE_INTENT_FILTER = "use_intent_filter"
 }
+
+private const val OPEN_SOURCE_REPO_URL = "https://github.com/limi-app/Limi-Android"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,12 +121,17 @@ fun SettingScreen(
             item {
                 val aboutLimi = stringResource(Res.string.about_limi)
                 val aboutLimiVersion = stringResource(Res.string.about_limi_version, appVersion)
+                val openSourceRepo = stringResource(Res.string.open_source_repo)
                 PreferenceGroup(stringResource(Res.string.about)) {
                     navigation(
                         title = aboutLimi,
                         summary = aboutLimiVersion,
                         showArrow = false,
                         onClick = {})
+                    navigation(
+                        title = openSourceRepo,
+                        summary = OPEN_SOURCE_REPO_URL,
+                        onClick = { context.openUrl(OPEN_SOURCE_REPO_URL) })
                     navigation(
                         title = openSourceLicense, onClick = {
                             val intent = Intent(context, OSSLicenseMenuActivity::class.java).apply {
