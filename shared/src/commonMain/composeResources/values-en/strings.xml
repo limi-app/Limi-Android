@@ -27,9 +27,10 @@
     <string name="exceptional_rules_group">Exceptional Rules</string>
     <string name="cloud_rules_group">Cloud Rules</string>
     <string name="firefox_query_stripping_rule">Firefox Query Parameter Stripping</string>
-    <string name="brave_clean_urls_rule">Brave Clean Urls</string>
+    <string name="brave_clean_urls_rule">Brave Clean URLs</string>
     <string name="brave_debounce_rule">Brave Debounce</string>
     <string name="brave_query_filter_rule">Brave Query Filter</string>
+    <string name="clear_urls_rule">ClearURLs.xyz</string>
     <string name="sync_rules">Sync Rules</string>
     <string name="sync_rules_failed_title">Sync Failed</string>
     <string name="sync_rules_failed_message">Failed to sync cloud rules. Check your network connection and try again.</string>

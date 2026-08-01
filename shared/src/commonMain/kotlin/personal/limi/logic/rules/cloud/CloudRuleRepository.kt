@@ -11,6 +11,8 @@ import personal.limi.logic.rules.cloud.brave.QueryFilterRuleKeys
 import personal.limi.logic.rules.cloud.brave.parseCleanUrls
 import personal.limi.logic.rules.cloud.brave.parseDebounce
 import personal.limi.logic.rules.cloud.brave.parseQueryFilter
+import personal.limi.logic.rules.cloud.clearurlsxyz.ClearUrlsRuleKeys
+import personal.limi.logic.rules.cloud.clearurlsxyz.parseClearUrls
 import personal.limi.logic.rules.cloud.firefox.FirefoxRuleKeys
 import personal.limi.logic.rules.cloud.firefox.parseQueryStrippingRecords
 import personal.limi.utils.datastore.DataStorePreferences
@@ -28,6 +30,10 @@ object CloudRuleRepository {
 
     private const val BRAVE_QUERY_FILTER_URL =
         "https://raw.githubusercontent.com/brave/adblock-lists/master/brave-lists/query-filter.json"
+
+    private const val CLEAR_URLS_DATA_URL = "https://rules1.clearurls.xyz/data.minify.json"
+
+    private const val CLEAR_URLS_HASH_URL = "https://rules1.clearurls.xyz/rules.minify.hash"
 
     private val client = HttpClient(CIO) {
         expectSuccess = true
@@ -60,6 +66,15 @@ object CloudRuleRepository {
         val rules = parseDebounce(body)
         DataStorePreferences.putString(DebounceRuleKeys.RULES, cloudRulesJson.encodeToString(rules))
         DataStorePreferences.putString(DebounceRuleKeys.VERSION_HASH, contentHash(body))
+    }
+
+    suspend fun syncClearUrls() {
+        val data = client.get(CLEAR_URLS_DATA_URL).bodyAsText()
+        val remoteHash = client.get(CLEAR_URLS_HASH_URL).bodyAsText().trim().lowercase()
+        check(contentHash(data) == remoteHash) { "ClearURLs hash mismatch" }
+        val catalog = parseClearUrls(data)
+        DataStorePreferences.putString(ClearUrlsRuleKeys.RULES, cloudRulesJson.encodeToString(catalog))
+        DataStorePreferences.putString(ClearUrlsRuleKeys.VERSION_HASH, remoteHash)
     }
 
     private suspend fun syncQueryRules(

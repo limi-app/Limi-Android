@@ -41,6 +41,7 @@ import limi.shared.generated.resources.bilibili_rule_desc
 import limi.shared.generated.resources.brave_clean_urls_rule
 import limi.shared.generated.resources.brave_debounce_rule
 import limi.shared.generated.resources.brave_query_filter_rule
+import limi.shared.generated.resources.clear_urls_rule
 import limi.shared.generated.resources.cloud_rules_group
 import limi.shared.generated.resources.cloud_rules_not_synced
 import limi.shared.generated.resources.cloud_rules_version
@@ -111,10 +112,12 @@ fun RuleScreen(
     val braveCleanUrlsEnabled by viewModel.isBraveCleanUrlsRuleEnabled.collectAsState()
     val braveDebounceEnabled by viewModel.isBraveDebounceRuleEnabled.collectAsState()
     val braveQueryFilterEnabled by viewModel.isBraveQueryFilterRuleEnabled.collectAsState()
+    val clearUrlsEnabled by viewModel.isClearUrlsRuleEnabled.collectAsState()
     val cloudRulesVersionTime by viewModel.cloudRulesVersionTime.collectAsState()
     val braveCleanUrlsVersionHash by viewModel.braveCleanUrlsVersionHash.collectAsState()
     val braveDebounceVersionHash by viewModel.braveDebounceVersionHash.collectAsState()
     val braveQueryFilterVersionHash by viewModel.braveQueryFilterVersionHash.collectAsState()
+    val clearUrlsVersionHash by viewModel.clearUrlsVersionHash.collectAsState()
 
     val locale = LocalConfiguration.current.locales[0]
     val unknownText = stringResource(Res.string.unknown)
@@ -156,6 +159,14 @@ fun RuleScreen(
                 stringResource(Res.string.cloud_rules_version, it.take(8))
             },
             onCheckedChange = { bool -> viewModel.setBraveDebounceRuleEnabled(bool) }
+        ),
+        CloudRuleSpec(
+            titleResId = Res.string.clear_urls_rule,
+            enabled = clearUrlsEnabled,
+            versionSummary = clearUrlsVersionHash.takeIf { it.isNotBlank() }?.let {
+                stringResource(Res.string.cloud_rules_version, it.take(8))
+            },
+            onCheckedChange = { bool -> viewModel.setClearUrlsRuleEnabled(bool) }
         )
     )
     val cloudRulesEnabled = cloudRuleSpecs.any { it.enabled }

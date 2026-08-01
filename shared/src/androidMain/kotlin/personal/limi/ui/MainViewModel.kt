@@ -18,6 +18,7 @@ import personal.limi.logic.rules.cloud.CloudRuleRepository
 import personal.limi.logic.rules.cloud.brave.CleanUrlsRuleKeys
 import personal.limi.logic.rules.cloud.brave.DebounceRuleKeys
 import personal.limi.logic.rules.cloud.brave.QueryFilterRuleKeys
+import personal.limi.logic.rules.cloud.clearurlsxyz.ClearUrlsRuleKeys
 import personal.limi.logic.rules.cloud.firefox.FirefoxRuleKeys
 import personal.limi.ui.screen.SettingIds
 import personal.limi.ui.share_panel.SharePanelActivity
@@ -52,6 +53,9 @@ class MainViewModel() : ViewModel() {
     val isBraveQueryFilterRuleEnabled =
         DataStorePreferences.getBooleanFlow(RuleIds.BRAVE_QUERY_FILTER, false)
             .asState(viewModelScope, false)
+    val isClearUrlsRuleEnabled =
+        DataStorePreferences.getBooleanFlow(RuleIds.CLEAR_URLS, false)
+            .asState(viewModelScope, false)
     val cloudRulesVersionTime = DataStorePreferences.getLongFlow(
         FirefoxRuleKeys.QUERY_STRIPPING_LAST_MODIFIED, 0L
     ).asState(viewModelScope, 0L)
@@ -63,6 +67,9 @@ class MainViewModel() : ViewModel() {
     ).asState(viewModelScope, "")
     val braveQueryFilterVersionHash = DataStorePreferences.getStringFlow(
         QueryFilterRuleKeys.VERSION_HASH, ""
+    ).asState(viewModelScope, "")
+    val clearUrlsVersionHash = DataStorePreferences.getStringFlow(
+        ClearUrlsRuleKeys.VERSION_HASH, ""
     ).asState(viewModelScope, "")
 
     private val _isSyncingCloudRules = MutableStateFlow(false)
@@ -95,6 +102,9 @@ class MainViewModel() : ViewModel() {
     fun setBraveQueryFilterRuleEnabled(bool: Boolean) =
         DataStorePreferences.putBooleanSync(RuleIds.BRAVE_QUERY_FILTER, bool)
 
+    fun setClearUrlsRuleEnabled(bool: Boolean) =
+        DataStorePreferences.putBooleanSync(RuleIds.CLEAR_URLS, bool)
+
     fun syncCloudRules() {
         if (_isSyncingCloudRules.value) return
         viewModelScope.launch(Dispatchers.IO) {
@@ -111,6 +121,9 @@ class MainViewModel() : ViewModel() {
                 }
                 if (isBraveQueryFilterRuleEnabled.value) {
                     CloudRuleRepository.syncQueryFilter()
+                }
+                if (isClearUrlsRuleEnabled.value) {
+                    CloudRuleRepository.syncClearUrls()
                 }
             } catch (e: Exception) {
                 _cloudRulesSyncFailed.value = true
