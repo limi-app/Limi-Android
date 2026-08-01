@@ -53,6 +53,8 @@ object SettingIds {
     const val USE_INTENT_FILTER = "use_intent_filter"
 }
 
+private const val OPEN_SOURCE_REPO_URL = "https://github.com/limi-app/Limi-Android"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
@@ -120,7 +122,6 @@ fun SettingScreen(
                 val aboutLimi = stringResource(Res.string.about_limi)
                 val aboutLimiVersion = stringResource(Res.string.about_limi_version, appVersion)
                 val openSourceRepo = stringResource(Res.string.open_source_repo)
-                val repoUrl = "https://github.com/limi-app/Limi-Android"
                 PreferenceGroup(stringResource(Res.string.about)) {
                     navigation(
                         title = aboutLimi,
@@ -129,8 +130,8 @@ fun SettingScreen(
                         onClick = {})
                     navigation(
                         title = openSourceRepo,
-                        summary = repoUrl,
-                        onClick = { context.openUrl(repoUrl) })
+                        summary = OPEN_SOURCE_REPO_URL,
+                        onClick = { context.openUrl(OPEN_SOURCE_REPO_URL) })
                     navigation(
                         title = openSourceLicense, onClick = {
                             val intent = Intent(context, OSSLicenseMenuActivity::class.java).apply {

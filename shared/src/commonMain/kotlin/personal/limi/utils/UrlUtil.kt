@@ -44,6 +44,21 @@ internal fun resolveRedirect(current: Url, location: String): Url {
         trimmed.startsWith("//") -> Url("${current.protocol.name}:$trimmed")
         hasUrlScheme(trimmed) -> Url(trimmed)
         trimmed.startsWith("/") -> Url("${current.protocol.name}://${current.authority}$trimmed")
+        trimmed.substringBefore('?').substringBefore('#').contains('/') ->
+            resolveRelativePath(current, trimmed)
         else -> Url(ensureUrlScheme(trimmed))
     }
+}
+
+/**
+ * 将不带协议、不以 / 开头的相对路径 Location 基于当前 URL 的路径目录解析
+ */
+private fun resolveRelativePath(current: Url, location: String): Url {
+    val basePath = current.encodedPath
+    val dir = if (basePath.endsWith('/')) {
+        basePath
+    } else {
+        basePath.substringBeforeLast('/', "") + "/"
+    }
+    return Url("${current.protocol.name}://${current.authority}$dir$location")
 }

@@ -34,11 +34,38 @@ class UrlUtilTest {
     }
 
     @Test
-    fun schemeLessLocationGetsHttpPrefix() {
+    fun pathRelativeLocationWithoutSlashResolvesAgainstCurrentPath() {
         val current = Url("http://b23.tv/BV1")
         assertEquals(
-            "http://bilibili.com/video/BV1",
-            resolveRedirect(current, "bilibili.com/video/BV1").toString()
+            "http://b23.tv/video/BV1",
+            resolveRedirect(current, "video/BV1").toString()
+        )
+    }
+
+    @Test
+    fun pathRelativeLocationResolvesAgainstCurrentDirectory() {
+        val current = Url("http://b23.tv/video/BV1")
+        assertEquals(
+            "http://b23.tv/video/more/thing",
+            resolveRedirect(current, "more/thing").toString()
+        )
+    }
+
+    @Test
+    fun pathRelativeLocationWithQueryResolvesAgainstCurrentPath() {
+        val current = Url("http://b23.tv/BV1")
+        assertEquals(
+            "http://b23.tv/video/BV1?x=1",
+            resolveRedirect(current, "video/BV1?x=1").toString()
+        )
+    }
+
+    @Test
+    fun singleSegmentLocationIsTreatedAsHost() {
+        val current = Url("http://b23.tv/BV1")
+        assertEquals(
+            "http://example.com",
+            resolveRedirect(current, "example.com").toString()
         )
     }
 

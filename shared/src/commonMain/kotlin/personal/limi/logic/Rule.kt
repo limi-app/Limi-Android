@@ -36,6 +36,7 @@ object RuleIds {
 }
 
 private val URL_SCHEME_REGEX = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*")
+private val SCHEME_PREFIX_REGEX = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:(//)?")
 private val KNOWN_URL_SCHEMES = setOf(
     "http", "https", "ftp", "ftps", "mailto", "tel", "file", "data", "about",
     "ws", "wss", "sms", "ssh", "git", "chrome", "intent"
@@ -62,7 +63,7 @@ internal fun ensureUrlScheme(urlString: String): String =
  * 保持用户链接原样式：原链接不带协议头时，不输出协议头
  */
 internal fun applyOriginalSchemeStyle(result: String, hadScheme: Boolean): String =
-    if (hadScheme) result else result.removePrefix("http://")
+    if (hadScheme) result else result.replaceFirst(SCHEME_PREFIX_REGEX, "")
 
 suspend fun processUrl(urlString: String): String {
 

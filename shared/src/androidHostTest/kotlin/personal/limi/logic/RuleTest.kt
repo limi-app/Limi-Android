@@ -75,4 +75,19 @@ class RuleTest {
         val processed = processUTMParams(Url(input)).toString()
         assertEquals("https://a.com?keep=1", applyOriginalSchemeStyle(processed, hasUrlScheme(input)))
     }
+
+    @Test
+    fun schemeLessInputStripsHttpsFromRedirectResult() {
+        assertEquals("example.com/path", applyOriginalSchemeStyle("https://example.com/path", false))
+    }
+
+    @Test
+    fun schemeLessInputStripsOtherScheme() {
+        assertEquals("example.com/path", applyOriginalSchemeStyle("ftp://example.com/path", false))
+    }
+
+    @Test
+    fun schemeLessInputKeepsSchemeLessResultUnchanged() {
+        assertEquals("example.com/path", applyOriginalSchemeStyle("example.com/path", false))
+    }
 }
