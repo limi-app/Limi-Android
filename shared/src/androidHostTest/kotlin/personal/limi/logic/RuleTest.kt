@@ -43,6 +43,21 @@ class RuleTest {
     }
 
     @Test
+    fun customSchemeWithSlashSlashKept() {
+        assertEquals("taobao://item.htm?id=1", ensureUrlScheme("taobao://item.htm?id=1"))
+    }
+
+    @Test
+    fun customSchemeDeepLinkKept() {
+        assertEquals("myapp:deep/path", ensureUrlScheme("myapp:deep/path"))
+    }
+
+    @Test
+    fun customSchemeWithActionKept() {
+        assertEquals("customapp:action?param=1", ensureUrlScheme("customapp:action?param=1"))
+    }
+
+    @Test
     fun wwwHostGetsHttpPrefix() {
         assertEquals("http://www.example.com", ensureUrlScheme("www.example.com"))
     }
