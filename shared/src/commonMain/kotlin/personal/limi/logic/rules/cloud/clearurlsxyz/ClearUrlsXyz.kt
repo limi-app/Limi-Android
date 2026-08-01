@@ -119,12 +119,20 @@ private fun removeFields(urlString: String, rules: List<Regex>): String {
 
 private fun decodeRedirectUrl(raw: String): String {
     var result = percentDecode(raw)
-    while (percentDecode(result) != result) {
-        result = percentDecode(result)
+    while (true) {
+        val decoded = percentDecode(result)
+        if (decoded == result) break
+        result = decoded
     }
-    if (!result.startsWith("http")) result = "http://$result"
-    return result
+    result = result.trim()
+
+    if (result.startsWith("//")) return "https:$result"
+
+    val scheme = SCHEME_REGEX.find(result)?.value?.dropLast(1)
+    return if (scheme != null && '.' !in scheme) result else "http://$result"
 }
+
+private val SCHEME_REGEX = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:")
 
 private fun percentDecode(input: String): String {
     val bytes = ArrayList<Byte>(input.length)

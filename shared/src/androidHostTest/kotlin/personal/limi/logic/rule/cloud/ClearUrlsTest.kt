@@ -133,6 +133,62 @@ class ClearUrlsTest {
     }
 
     @Test
+    fun redirectionPreservesSchemeCaseInsensitively() {
+        val catalog = ClearUrlsCatalog(
+            providers = mapOf(
+                "r" to ClearUrlsProvider(
+                    urlPattern = ".*",
+                    redirections = listOf("^https?://r\\.com\\?to=(.*)")
+                )
+            )
+        )
+        val url = Url("https://r.com?to=HTTPS%3A%2F%2FExample.com")
+        assertEquals("https://Example.com", processClearUrls(url, catalog).toString())
+    }
+
+    @Test
+    fun redirectionPreservesMailtoScheme() {
+        val catalog = ClearUrlsCatalog(
+            providers = mapOf(
+                "r" to ClearUrlsProvider(
+                    urlPattern = ".*",
+                    redirections = listOf("^https?://r\\.com\\?to=(.*)")
+                )
+            )
+        )
+        val url = Url("https://r.com?to=mailto%3Auser%40example.com")
+        assertEquals("mailto:user@example.com", processClearUrls(url, catalog).toString())
+    }
+
+    @Test
+    fun schemeRelativeRedirectionDefaultsToHttps() {
+        val catalog = ClearUrlsCatalog(
+            providers = mapOf(
+                "r" to ClearUrlsProvider(
+                    urlPattern = ".*",
+                    redirections = listOf("^https?://r\\.com\\?to=(.*)")
+                )
+            )
+        )
+        val url = Url("https://r.com?to=%2F%2Fexample.com%2Fpath")
+        assertEquals("https://example.com/path", processClearUrls(url, catalog).toString())
+    }
+
+    @Test
+    fun multiLayerEncodedHostGetsHttpPrefix() {
+        val catalog = ClearUrlsCatalog(
+            providers = mapOf(
+                "r" to ClearUrlsProvider(
+                    urlPattern = ".*",
+                    redirections = listOf("^https?://r\\.com\\?to=(.*)")
+                )
+            )
+        )
+        val url = Url("https://r.com?to=e%2578ample.com")
+        assertEquals("http://example.com", processClearUrls(url, catalog).toString())
+    }
+
+    @Test
     fun recursiveCleaningAfterRedirection() {
         val catalog = ClearUrlsCatalog(
             providers = mapOf(
