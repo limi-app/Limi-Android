@@ -50,6 +50,12 @@ internal fun hasUrlScheme(urlString: String): Boolean {
     if (candidate.contains('.')) return false
     // localhost 是唯一常见的无 "." hostname
     if (candidate.lowercase() == "localhost") return false
+    // host:port 误判（如 intranet:8080）：冒号后是纯数字端口时视为 host:port
+    val port = urlString.substring(colonIndex + 1)
+        .substringBefore('/')
+        .substringBefore('?')
+        .substringBefore('#')
+    if (port.isNotEmpty() && port.all { it.isDigit() }) return false
     return true
 }
 

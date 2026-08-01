@@ -28,6 +28,11 @@ class RuleTest {
     }
 
     @Test
+    fun schemeLessSingleLabelHostWithPortGetsHttpPrefix() {
+        assertEquals("http://intranet:8080", ensureUrlScheme("intranet:8080"))
+    }
+
+    @Test
     fun httpUrlKept() {
         assertEquals("http://a.com/x", ensureUrlScheme("http://a.com/x"))
     }
