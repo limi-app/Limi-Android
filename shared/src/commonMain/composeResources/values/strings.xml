@@ -56,5 +56,6 @@
     <string name="no_qr_code_found">未在图片中找到二维码</string>
     <string name="about_limi">关于 Limi</string>
     <string name="about_limi_version">版本：%1$s</string>
+    <string name="open_source_repo">开源仓库</string>
     <string name="edit_original_text_placeholder">输入或粘贴包含链接的文本</string>
 </resources>

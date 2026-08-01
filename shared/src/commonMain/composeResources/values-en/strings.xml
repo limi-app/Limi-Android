@@ -56,5 +56,6 @@
     <string name="no_qr_code_found">No QR codes found in the image.</string>
     <string name="about_limi">About Limi</string>
     <string name="about_limi_version">Version: %1$s</string>
+    <string name="open_source_repo">Open Source Repository</string>
     <string name="edit_original_text_placeholder">Input or paste text containing links</string>
 </resources>
