@@ -15,6 +15,9 @@ import personal.limi.logic.rules.cloud.brave.decodeQueryFilterRules
 import personal.limi.logic.rules.cloud.brave.processCleanUrls
 import personal.limi.logic.rules.cloud.brave.processDebounce
 import personal.limi.logic.rules.cloud.brave.processQueryFilter
+import personal.limi.logic.rules.cloud.clearurlsxyz.ClearUrlsRuleKeys
+import personal.limi.logic.rules.cloud.clearurlsxyz.decodeClearUrlsRules
+import personal.limi.logic.rules.cloud.clearurlsxyz.processClearUrls
 import personal.limi.logic.rules.cloud.firefox.FirefoxRuleKeys
 import personal.limi.logic.rules.cloud.firefox.processQueryStripping
 import personal.limi.logic.rules.common.processUTMParams
@@ -29,6 +32,7 @@ object RuleIds {
     const val BRAVE_CLEAN_URLS = "brave_clean_urls_rules"
     const val BRAVE_DEBOUNCE = "brave_debounce_rules"
     const val BRAVE_QUERY_FILTER = "brave_query_filter_rules"
+    const val CLEAR_URLS = "clear_urls_rules"
 }
 
 suspend fun processUrl(urlString: String): String {
@@ -40,7 +44,8 @@ suspend fun processUrl(urlString: String): String {
         firefoxQueryStripping = DataStorePreferences.getBoolean(RuleIds.FIREFOX_QUERY_STRIPPING, false),
         braveCleanUrls = DataStorePreferences.getBoolean(RuleIds.BRAVE_CLEAN_URLS, false),
         braveDebounce = DataStorePreferences.getBoolean(RuleIds.BRAVE_DEBOUNCE, false),
-        braveQueryFilter = DataStorePreferences.getBoolean(RuleIds.BRAVE_QUERY_FILTER, false)
+        braveQueryFilter = DataStorePreferences.getBoolean(RuleIds.BRAVE_QUERY_FILTER, false),
+        clearUrls = DataStorePreferences.getBoolean(RuleIds.CLEAR_URLS, false)
     )
 
     var finalUrl = Url(urlString)
@@ -84,6 +89,10 @@ suspend fun processUrl(urlString: String): String {
     if (ruleConfig.braveQueryFilter) {
         val rules = decodeQueryFilterRules(DataStorePreferences.getString(QueryFilterRuleKeys.RULES, ""))
         if (rules.isNotEmpty()) finalUrl = processQueryFilter(finalUrl, rules)
+    }
+    if (ruleConfig.clearUrls) {
+        val catalog = decodeClearUrlsRules(DataStorePreferences.getString(ClearUrlsRuleKeys.RULES, ""))
+        if (catalog.providers.isNotEmpty()) finalUrl = processClearUrls(finalUrl, catalog)
     }
 
     val finalUrlString = finalUrl.toString()

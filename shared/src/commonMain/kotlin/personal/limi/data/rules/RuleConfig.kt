@@ -8,4 +8,5 @@ data class RuleConfig(
     val braveCleanUrls: Boolean,
     val braveDebounce: Boolean,
     val braveQueryFilter: Boolean,
+    val clearUrls: Boolean,
 )
