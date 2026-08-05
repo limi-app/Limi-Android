@@ -14,7 +14,7 @@ plugins {
 
 spotless {
   kotlin {
-    target("*.kt", "*.kts")
+    target("src/**/*.kt", "src/**/*.kts", "*.kt", "*.kts")
     ktfmt().googleStyle()
   }
 }
