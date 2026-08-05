@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,7 +54,9 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import personal.limi.utils.openUrl
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun OSSLicense(uniqueId: String, finish: () -> Unit) {
   var libraries by remember { mutableStateOf<Libs?>(null) }
@@ -82,6 +85,7 @@ fun OSSLicense(uniqueId: String, finish: () -> Unit) {
     topBar = {
       TopAppBar(
         title = { Text(text = stringResource(Res.string.open_source_license)) },
+        subtitle = { library?.let { Text(text = it.name, maxLines = 1) } },
         scrollBehavior = scrollBehavior,
         colors =
           TopAppBarDefaults.topAppBarColors(
