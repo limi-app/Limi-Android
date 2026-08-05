@@ -40,9 +40,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikepenz.aboutlibraries.Libs
+import dev.vicart.compose.material.symbols.MaterialSymbols
+import dev.vicart.compose.material.symbols.OutlinedSymbol
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.back
 import limi.shared.generated.resources.open_source_license
@@ -131,10 +134,10 @@ fun OSSLicense(uniqueId: String, finish: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
               ) {
-                Icon(
-                  imageVector = Icons.Outlined.Link,
-                  contentDescription = stringResource(Res.string.open_source_license),
+                OutlinedSymbol(
+                  icon = MaterialSymbols.LINK_2,
                   tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                  weight = FontWeight.Normal,
                   modifier = Modifier.padding(end = 6.dp),
                 )
                 Text(
@@ -172,10 +175,10 @@ fun OSSLicense(uniqueId: String, finish: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
               ) {
-                Icon(
-                  imageVector = Icons.Outlined.Link,
-                  contentDescription = stringResource(Res.string.open_source_license),
+                OutlinedSymbol(
+                  icon = MaterialSymbols.LINK_2,
                   tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                  weight = FontWeight.Normal,
                   modifier = Modifier.padding(end = 6.dp),
                 )
                 Text(

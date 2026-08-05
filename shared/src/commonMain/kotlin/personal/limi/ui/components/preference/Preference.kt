@@ -65,7 +65,7 @@ fun BasePreferenceCell(
         if (summary != null) {
           Spacer(modifier = Modifier.height(2.dp))
           Text(
-            text = summary,
+            text = summary.trim(),
             style = MaterialTheme.typography.bodyMedium,
             color =
               if (enabled) MaterialTheme.colorScheme.onSurfaceVariant
