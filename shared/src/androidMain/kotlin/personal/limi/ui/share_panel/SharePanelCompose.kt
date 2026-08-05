@@ -53,11 +53,14 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.vicart.compose.material.symbols.MaterialSymbols
+import dev.vicart.compose.material.symbols.OutlinedSymbol
 import kotlinx.coroutines.launch
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.app_name
@@ -191,12 +194,10 @@ private fun EditingContent(
                 enabled = isCancelEnabled,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Close,
-                    contentDescription = stringResource(Res.string.discard_and_back),
-                    modifier = Modifier.size(
-                        ButtonDefaults.IconSize
-                    )
+                OutlinedSymbol(
+                    icon = MaterialSymbols.CLOSE,
+                    size = ButtonDefaults.IconSize,
+                    weight = FontWeight.Normal
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(stringResource(Res.string.discard_and_back))
@@ -212,12 +213,10 @@ private fun EditingContent(
                 enabled = isConfirmEnabled,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Check,
-                    contentDescription = stringResource(Res.string.confirm),
-                    modifier = Modifier.size(
-                        ButtonDefaults.IconSize
-                    )
+                OutlinedSymbol(
+                    icon = MaterialSymbols.CHECK,
+                    size = ButtonDefaults.IconSize,
+                    weight = FontWeight.Normal
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(stringResource(Res.string.confirm))
@@ -273,9 +272,9 @@ private fun EditCard(onClick: () -> Unit) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
-                contentDescription = stringResource(Res.string.edit_original_text),
+            OutlinedSymbol(
+                icon = MaterialSymbols.KEYBOARD_ARROW_LEFT,
+                weight = FontWeight.Normal,
                 modifier = Modifier.padding(end = 4.dp)
             )
             Text(
@@ -449,12 +448,10 @@ private fun ActionButtonsRow(
             enabled = isEnabled,
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Share,
-                contentDescription = stringResource(Res.string.share),
-                modifier = Modifier.size(
-                    ButtonDefaults.IconSize
-                )
+            OutlinedSymbol(
+                icon = MaterialSymbols.SHARE,
+                size = ButtonDefaults.IconSize,
+                weight = FontWeight.Normal
             )
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(stringResource(Res.string.share))
@@ -467,12 +464,10 @@ private fun ActionButtonsRow(
             enabled = isEnabled,
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
         ) {
-            Icon(
-                imageVector = Icons.Outlined.ContentCopy,
-                contentDescription = stringResource(Res.string.copy),
-                modifier = Modifier.size(
-                    ButtonDefaults.IconSize
-                )
+            OutlinedSymbol(
+                icon = MaterialSymbols.CONTENT_COPY,
+                size = ButtonDefaults.IconSize,
+                weight = FontWeight.Normal
             )
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(stringResource(Res.string.copy))
