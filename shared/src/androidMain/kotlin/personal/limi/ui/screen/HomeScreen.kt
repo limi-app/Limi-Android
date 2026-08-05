@@ -17,10 +17,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.AddPhotoAlternate
-import androidx.compose.material.icons.outlined.AllInclusive
-import androidx.compose.material.icons.outlined.DriveFileRenameOutline
-import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButtonMenu
@@ -68,17 +64,20 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.traversalIndex
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.darkokoa.pangu.Pangu
-import org.jetbrains.compose.resources.stringResource
+import dev.vicart.compose.material.symbols.MaterialSymbols
+import dev.vicart.compose.material.symbols.OutlinedSymbol
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.app_name
 import limi.shared.generated.resources.from_text
 import limi.shared.generated.resources.no_history
 import limi.shared.generated.resources.scan_qrcode
 import limi.shared.generated.resources.select_from_gallery
+import org.jetbrains.compose.resources.stringResource
 import personal.limi.ui.HistoryDetailActivity
 import personal.limi.ui.MainViewModel
 import personal.limi.ui.components.preference.PreferenceGroup
@@ -185,9 +184,9 @@ fun HomeScreen(viewModel: MainViewModel = viewModel { MainViewModel() }) {
             val selectFromGallery = stringResource(Res.string.select_from_gallery)
 
             val items = listOf(
-                Icons.Outlined.DriveFileRenameOutline to fromText,
-                Icons.Outlined.QrCodeScanner to scanQRCode,
-                Icons.Outlined.AddPhotoAlternate to selectFromGallery
+                MaterialSymbols.DRIVE_FILE_RENAME_OUTLINE to fromText,
+                MaterialSymbols.QR_CODE_SCANNER to scanQRCode,
+                MaterialSymbols.ADD_PHOTO_ALTERNATE to selectFromGallery
             )
 
             var fabMenuExpanded by rememberSaveable { mutableStateOf(false) }
@@ -215,7 +214,7 @@ fun HomeScreen(viewModel: MainViewModel = viewModel { MainViewModel() }) {
                                 }
                                 .animateFloatingActionButton(
                                     visible = fabVisible || fabMenuExpanded,
-                                    alignment = Alignment.BottomEnd,
+                                    alignment = Alignment.Center,
                                 )
                                 .focusRequester(focusRequester),
                             checked = fabMenuExpanded,
@@ -270,7 +269,7 @@ fun HomeScreen(viewModel: MainViewModel = viewModel { MainViewModel() }) {
                                 selectFromGallery -> pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                             }
                         },
-                        icon = { Icon(item.first, contentDescription = null) },
+                        icon = { OutlinedSymbol(item.first, weight = FontWeight.Normal) },
                         text = { Text(text = item.second) },
                     )
                 }

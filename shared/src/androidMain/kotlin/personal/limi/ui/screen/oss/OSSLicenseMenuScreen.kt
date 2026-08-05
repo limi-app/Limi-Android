@@ -30,11 +30,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.mikepenz.aboutlibraries.Libs
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.stringResource
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.back
 import limi.shared.generated.resources.open_source_license
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import personal.limi.ui.OSSLicenseActivity
 import personal.limi.ui.components.oss.LicenseItem
 import personal.limi.ui.components.oss.OSSLicenseGroup

@@ -12,6 +12,7 @@ androidx-lifecycle = "2.11.0"
 androidx-testExt = "1.3.0"
 barcodeScanning = "17.3.0"
 browser = "1.10.0"
+composeMaterialSymbols = "1.1.5"
 composeMultiplatform = "1.11.1"
 composeMaterialIcon = "1.7.3"
 coreSplashscreen = "1.2.0"
@@ -47,6 +48,7 @@ barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref =
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "composeMaterialIcon" }
+compose-material-symbols = { module = "dev.vicart:compose-material-symbols", version.ref = "composeMaterialSymbols" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }

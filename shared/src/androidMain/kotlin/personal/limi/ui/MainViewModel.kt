@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +26,7 @@ import personal.limi.utils.asState
 import personal.limi.utils.datastore.DataStorePreferences
 import personal.limi.utils.room.LimiHistoryDao
 import personal.limi.utils.startPlayBarcodeScanner
+import java.io.IOException
 
 class MainViewModel() : ViewModel() {
     val dao: LimiHistoryDao = DatabaseHolder.database.getLimiHistoryDao()

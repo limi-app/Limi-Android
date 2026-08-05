@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,8 +31,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.darkokoa.pangu.Pangu
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
+import dev.vicart.compose.material.symbols.MaterialSymbols
+import dev.vicart.compose.material.symbols.OutlinedSymbol
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.bilibili_rule
 import limi.shared.generated.resources.bilibili_rule_desc
@@ -58,6 +56,8 @@ import limi.shared.generated.resources.utm_enhanced_rule
 import limi.shared.generated.resources.utm_enhanced_rule_desc
 import limi.shared.generated.resources.utm_rule
 import limi.shared.generated.resources.utm_rule_desc
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import personal.limi.ui.MainViewModel
 import personal.limi.ui.components.preference.PreferenceGroup
 import personal.limi.ui.components.preference.switch
@@ -191,10 +191,7 @@ fun RuleScreen(
                 ), actions = {
                     if (cloudRulesEnabled) {
                         IconButton(onClick = { viewModel.syncCloudRules() }, enabled = !isSyncing) {
-                            if (!isSyncing) Icon(
-                                imageVector = Icons.Outlined.Sync,
-                                contentDescription = stringResource(Res.string.sync_rules)
-                            ) else LoadingIndicator()
+                            if (!isSyncing) OutlinedSymbol(icon = MaterialSymbols.SYNC) else LoadingIndicator()
                         }
                     }
                 }

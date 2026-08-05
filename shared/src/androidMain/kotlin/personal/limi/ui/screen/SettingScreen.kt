@@ -27,8 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.about
 import limi.shared.generated.resources.about_limi
@@ -41,6 +39,8 @@ import limi.shared.generated.resources.open_source_repo
 import limi.shared.generated.resources.setting
 import limi.shared.generated.resources.use_intent_filter
 import limi.shared.generated.resources.use_intent_filter_desc
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import personal.limi.ui.MainViewModel
 import personal.limi.ui.OSSLicenseMenuActivity
 import personal.limi.ui.components.preference.PreferenceGroup

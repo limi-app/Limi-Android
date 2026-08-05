@@ -54,6 +54,7 @@ kotlin {
             implementation(libs.pangu)
             implementation(libs.kotlincrypto.hash.sha2)
             implementation(libs.aboutlibraries.core)
+            implementation(libs.compose.material.symbols)
         }
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)

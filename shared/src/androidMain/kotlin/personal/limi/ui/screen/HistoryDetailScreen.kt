@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.darkokoa.pangu.Pangu
-import org.jetbrains.compose.resources.stringResource
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.back
 import limi.shared.generated.resources.cancel
@@ -48,6 +47,7 @@ import limi.shared.generated.resources.history_detail
 import limi.shared.generated.resources.original_text
 import limi.shared.generated.resources.processing_results
 import limi.shared.generated.resources.time_label
+import org.jetbrains.compose.resources.stringResource
 import personal.limi.data.model.LimiHistoryEntity
 import personal.limi.ui.HistoryDetailViewModel
 import java.time.LocalDateTime
