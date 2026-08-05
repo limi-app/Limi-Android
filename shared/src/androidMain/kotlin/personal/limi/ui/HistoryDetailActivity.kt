@@ -13,25 +13,26 @@ import personal.limi.theme.LimiTheme
 import personal.limi.ui.screen.HistoryDetailScreen
 
 class HistoryDetailActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
+    super.onCreate(savedInstanceState)
 
-        // 从Intent获取历史记录数据
-        val history = LimiHistoryEntity(
-            id = intent.getLongExtra("history_id", 0),
-            originUrl = intent.getStringExtra("history_origin_url") ?: "",
-            processedUrl = intent.getStringExtra("history_processed_url") ?: "",
-            datetime = intent.getStringExtra("history_datetime") ?: ""
-        )
+    // 从Intent获取历史记录数据
+    val history =
+      LimiHistoryEntity(
+        id = intent.getLongExtra("history_id", 0),
+        originUrl = intent.getStringExtra("history_origin_url") ?: "",
+        processedUrl = intent.getStringExtra("history_processed_url") ?: "",
+        datetime = intent.getStringExtra("history_datetime") ?: "",
+      )
 
-        setContent {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = Color.Transparent
-            ) {
-                LimiTheme { HistoryDetailScreen(history = history, onBack = { finish() }) }
-            }
-        }
+    setContent {
+      Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color.Transparent,
+      ) {
+        LimiTheme { HistoryDetailScreen(history = history, onBack = { finish() }) }
+      }
     }
+  }
 }

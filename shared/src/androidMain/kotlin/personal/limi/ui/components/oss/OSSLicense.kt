@@ -29,134 +29,141 @@ import personal.limi.utils.openUrl
 
 @Composable
 fun BaseLicenseCell(
-    shape: Shape,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    onClick: (() -> Unit)? = null,
-    content: @Composable () -> Unit
+  shape: Shape,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  onClick: (() -> Unit)? = null,
+  content: @Composable () -> Unit,
 ) {
-    Surface(
-        shape = shape,
-        color = MaterialTheme.colorScheme.surfaceContainer,
-        modifier = modifier.fillMaxWidth(),
-        onClick = { if (enabled) onClick?.invoke() },
-        enabled = (onClick != null) && enabled
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) { content() }
-    }
+  Surface(
+    shape = shape,
+    color = MaterialTheme.colorScheme.surfaceContainer,
+    modifier = modifier.fillMaxWidth(),
+    onClick = { if (enabled) onClick?.invoke() },
+    enabled = (onClick != null) && enabled,
+  ) {
+    Column(modifier = Modifier.padding(16.dp)) { content() }
+  }
 }
 
-/**
- * 开源许可证项，使用PreferenceGroup风格
- */
+/** 开源许可证项，使用PreferenceGroup风格 */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LicenseItem(
-    shape: Shape, library: Library, onClick: () -> Unit
+  shape: Shape,
+  library: Library,
+  onClick: () -> Unit,
 ) {
-    val context = LocalContext.current
-    BaseLicenseCell(shape = shape, onClick = onClick) {
-        // 库名称
-        Text(
-            text = library.name,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+  val context = LocalContext.current
+  BaseLicenseCell(shape = shape, onClick = onClick) {
+    // 库名称
+    Text(
+      text = library.name,
+      style = MaterialTheme.typography.titleMedium,
+      color = MaterialTheme.colorScheme.onSurface,
+    )
 
-        // 包名
-        Text(
-            text = library.uniqueId,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    // 包名
+    Text(
+      text = library.uniqueId,
+      style = MaterialTheme.typography.labelSmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 
-        // 作者信息
-        if (library.developers.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(4.dp))
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
-                verticalArrangement = Arrangement.spacedBy(0.dp)
-            ) {
-                library.developers.forEachIndexed { index, developer ->
-                    val devName = developer.name
-                    val devUrl = developer.organisationUrl
-                    if (!devUrl.isNullOrBlank() && !devName.isNullOrBlank()) Text(
-                        text = devName,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            textDecoration = TextDecoration.Underline
-                        ),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            onClick = { context.openUrl(devUrl) })
-                    ) else Text(
-                        text = devName ?: "",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    if (index < library.developers.size - 1) Text(
-                        text = ", ",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-        }
-
-        // 描述信息
-        val description = library.description
-        if (!description.isNullOrBlank()) {
-            Spacer(modifier = Modifier.height(4.dp))
+    // 作者信息
+    if (library.developers.isNotEmpty()) {
+      Spacer(modifier = Modifier.height(4.dp))
+      FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
+      ) {
+        library.developers.forEachIndexed { index, developer ->
+          val devName = developer.name
+          val devUrl = developer.organisationUrl
+          if (!devUrl.isNullOrBlank() && !devName.isNullOrBlank())
             Text(
-                text = description,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+              text = devName,
+              style =
+                MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline),
+              color = MaterialTheme.colorScheme.primary,
+              modifier =
+                Modifier.clickable(
+                  indication = null,
+                  interactionSource = remember { MutableInteractionSource() },
+                  onClick = { context.openUrl(devUrl) },
+                ),
+            )
+          else
+            Text(
+              text = devName ?: "",
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurface,
+            )
+
+          if (index < library.developers.size - 1)
+            Text(
+              text = ", ",
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurface,
             )
         }
-
-        // 版本和许可证信息
-        Spacer(modifier = Modifier.height(8.dp))
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(7.dp),
-        ) {
-            // 版本信息
-            val version = library.artifactVersion
-            if (!version.isNullOrEmpty()) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    ), shape = RoundedCornerShape(4.dp)
-                ) {
-                    Text(
-                        text = if (version.firstOrNull()?.isDigit() == true) "v$version" else version,
-                        modifier = Modifier.padding(8.dp, 3.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-            // 许可证信息
-            library.licenses.forEach { license ->
-                Card(
-                    colors = CardDefaults.cardColors(
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ), shape = RoundedCornerShape(4.dp)
-                ) {
-                    Text(
-                        modifier = Modifier.padding(8.dp, 3.dp),
-                        text = license.name,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
-            }
-        }
+      }
     }
+
+    // 描述信息
+    val description = library.description
+    if (!description.isNullOrBlank()) {
+      Spacer(modifier = Modifier.height(4.dp))
+      Text(
+        text = description,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+
+    // 版本和许可证信息
+    Spacer(modifier = Modifier.height(8.dp))
+    FlowRow(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalArrangement = Arrangement.spacedBy(7.dp),
+    ) {
+      // 版本信息
+      val version = library.artifactVersion
+      if (!version.isNullOrEmpty()) {
+        Card(
+          colors =
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+          shape = RoundedCornerShape(4.dp),
+        ) {
+          Text(
+            text = if (version.firstOrNull()?.isDigit() == true) "v$version" else version,
+            modifier = Modifier.padding(8.dp, 3.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+          )
+        }
+      }
+
+      // 许可证信息
+      library.licenses.forEach { license ->
+        Card(
+          colors =
+            CardDefaults.cardColors(
+              contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+              containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+          shape = RoundedCornerShape(4.dp),
+        ) {
+          Text(
+            modifier = Modifier.padding(8.dp, 3.dp),
+            text = license.name,
+            style = MaterialTheme.typography.labelSmall,
+          )
+        }
+      }
+    }
+  }
 }

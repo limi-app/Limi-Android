@@ -42,67 +42,76 @@ import personal.limi.ui.components.oss.OSSLicenseGroup
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 fun OSSLicenseMenu(onBack: () -> Unit) {
-    var libraries by remember { mutableStateOf<Libs?>(null) }
-    LaunchedEffect(Unit) {
-        val json = Res.readBytes("files/aboutlibraries.json").decodeToString()
-        libraries = Libs.Builder().withJson(json).build()
-    }
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val listState = rememberLazyListState()
-    val layoutDirection = LocalLayoutDirection.current
-    val context = LocalContext.current
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(Res.string.open_source_license)) },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(Res.string.back)
-                        )
-                    }
-                },
+  var libraries by remember { mutableStateOf<Libs?>(null) }
+  LaunchedEffect(Unit) {
+    val json = Res.readBytes("files/aboutlibraries.json").decodeToString()
+    libraries = Libs.Builder().withJson(json).build()
+  }
+  val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+  val listState = rememberLazyListState()
+  val layoutDirection = LocalLayoutDirection.current
+  val context = LocalContext.current
+  Scaffold(
+    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = {
+      TopAppBar(
+        title = { Text(text = stringResource(Res.string.open_source_license)) },
+        scrollBehavior = scrollBehavior,
+        colors =
+          TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+          ),
+        navigationIcon = {
+          IconButton(onClick = onBack) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+              contentDescription = stringResource(Res.string.back),
             )
-        }) { innerPadding ->
-        LazyColumn(
-            state = listState, modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = innerPadding.calculateStartPadding(layoutDirection),
-                    end = innerPadding.calculateEndPadding(layoutDirection),
-                    top = innerPadding.calculateTopPadding(),
-                )
-        ) {
-            item {
-                OSSLicenseGroup {
-                    libraries?.libraries?.forEach { library ->
-                        item { shape ->
-                            LicenseItem(
-                                shape = shape, library = library, onClick = {
-                                    if (library.licenses.isNotEmpty() || library.website != null) {
-                                        val intent = Intent(
-                                            context, OSSLicenseActivity::class.java
-                                        ).apply {
-                                            putExtra("library", library.uniqueId)
-                                            flags =
-                                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                        }
-                                        context.startActivity(intent)
-                                    }
-                                })
+          }
+        },
+      )
+    },
+  ) { innerPadding ->
+    LazyColumn(
+      state = listState,
+      modifier =
+        Modifier.fillMaxSize()
+          .padding(
+            start = innerPadding.calculateStartPadding(layoutDirection),
+            end = innerPadding.calculateEndPadding(layoutDirection),
+            top = innerPadding.calculateTopPadding(),
+          ),
+    ) {
+      item {
+        OSSLicenseGroup {
+          libraries?.libraries?.forEach { library ->
+            item { shape ->
+              LicenseItem(
+                shape = shape,
+                library = library,
+                onClick = {
+                  if (library.licenses.isNotEmpty() || library.website != null) {
+                    val intent =
+                      Intent(
+                          context,
+                          OSSLicenseActivity::class.java,
+                        )
+                        .apply {
+                          putExtra("library", library.uniqueId)
+                          flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                         }
-                    }
-                }
+                    context.startActivity(intent)
+                  }
+                },
+              )
             }
-            item {
-                Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
-            }
+          }
         }
+      }
+      item {
+        Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
+      }
     }
+  }
 }

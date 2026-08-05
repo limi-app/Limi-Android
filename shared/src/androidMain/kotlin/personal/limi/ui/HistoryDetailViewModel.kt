@@ -8,16 +8,16 @@ import personal.limi.utils.DatabaseHolder
 import personal.limi.utils.room.LimiHistoryDao
 
 class HistoryDetailViewModel : ViewModel() {
-    private val dao: LimiHistoryDao = DatabaseHolder.database.getLimiHistoryDao()
+  private val dao: LimiHistoryDao = DatabaseHolder.database.getLimiHistoryDao()
 
-    fun deleteHistory(history: LimiHistoryEntity, onDeleteSuccess: () -> Unit) {
-        viewModelScope.launch {
-            try {
-                dao.delete(history)
-                onDeleteSuccess()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+  fun deleteHistory(history: LimiHistoryEntity, onDeleteSuccess: () -> Unit) {
+    viewModelScope.launch {
+      try {
+        dao.delete(history)
+        onDeleteSuccess()
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
     }
+  }
 }

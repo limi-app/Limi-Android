@@ -9,17 +9,17 @@ import personal.limi.theme.LimiTheme
 import personal.limi.ui.screen.oss.OSSLicense
 
 class OSSLicenseActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
+    super.onCreate(savedInstanceState)
 
-        val uniqueId = intent.getStringExtra("library")
-        Log.i("11", uniqueId ?: "")
-        if (uniqueId == null) {
-            finish()
-            return
-        }
-
-        setContent { LimiTheme { OSSLicense(uniqueId, { finish() }) } }
+    val uniqueId = intent.getStringExtra("library")
+    Log.i("11", uniqueId ?: "")
+    if (uniqueId == null) {
+      finish()
+      return
     }
+
+    setContent { LimiTheme { OSSLicense(uniqueId, { finish() }) } }
+  }
 }

@@ -31,85 +31,80 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Android16SettingsScreen() {
-    var wifiOn by remember { mutableStateOf(true) }
-    var bluetoothOn by remember { mutableStateOf(true) }
-    var deviceName by remember { mutableStateOf("Pixel 9 Pro") }
-    var volume by remember { mutableFloatStateOf(0.7f) }
+  var wifiOn by remember { mutableStateOf(true) }
+  var bluetoothOn by remember { mutableStateOf(true) }
+  var deviceName by remember { mutableStateOf("Pixel 9 Pro") }
+  var volume by remember { mutableFloatStateOf(0.7f) }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background, // 纯黑或纯白背景
-        topBar = {
-            LargeTopAppBar(
-                title = { Text("Settings") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Group 1: Connectivity (演示 Top/Middle/Bottom 逻辑)
-            PreferenceGroup(title = "Connectivity") {
-                // Top: 上大圆角，下小圆角
-                switch(
-                    title = "Internet",
-                    summary = "Wi-Fi, Mobile, Data usage",
-                    icon = Icons.Default.Wifi,
-                    checked = wifiOn,
-                    onCheckedChange = { wifiOn = it }
-                )
+  Scaffold(
+    containerColor = MaterialTheme.colorScheme.background, // 纯黑或纯白背景
+    topBar = {
+      LargeTopAppBar(
+        title = { Text("Settings") },
+        colors =
+          TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+      )
+    },
+  ) { padding ->
+    Column(modifier = Modifier.padding(padding).verticalScroll(rememberScrollState())) {
+      // Group 1: Connectivity (演示 Top/Middle/Bottom 逻辑)
+      PreferenceGroup(title = "Connectivity") {
+        // Top: 上大圆角，下小圆角
+        switch(
+          title = "Internet",
+          summary = "Wi-Fi, Mobile, Data usage",
+          icon = Icons.Default.Wifi,
+          checked = wifiOn,
+          onCheckedChange = { wifiOn = it },
+        )
 
-                // Middle: 上下都是小圆角 (2dp-4dp)
-                switch(
-                    title = "Bluetooth",
-                    summary = if (bluetoothOn) "On" else "Off",
-                    icon = Icons.Default.Bluetooth,
-                    checked = bluetoothOn,
-                    onCheckedChange = { bluetoothOn = it }
-                )
+        // Middle: 上下都是小圆角 (2dp-4dp)
+        switch(
+          title = "Bluetooth",
+          summary = if (bluetoothOn) "On" else "Off",
+          icon = Icons.Default.Bluetooth,
+          checked = bluetoothOn,
+          onCheckedChange = { bluetoothOn = it },
+        )
 
-                // Bottom: 上小圆角，下大圆角
-                navigation(
-                    title = "SIM Manager",
-                    summary = "eSIM, Dual SIM",
-                    icon = Icons.Default.SimCard,
-                    onClick = {}
-                )
-            }
+        // Bottom: 上小圆角，下大圆角
+        navigation(
+          title = "SIM Manager",
+          summary = "eSIM, Dual SIM",
+          icon = Icons.Default.SimCard,
+          onClick = {},
+        )
+      }
 
-            // Group 2: Device Info (演示 Input 和 Single)
-            PreferenceGroup(title = "Device") {
-                // 如果只有一个 Item，会自动变成全大圆角
-                input(
-                    title = "Device Name",
-                    value = deviceName,
-                    onValueChange = { deviceName = it },
-                    icon = Icons.Default.Edit
-                )
-            }
+      // Group 2: Device Info (演示 Input 和 Single)
+      PreferenceGroup(title = "Device") {
+        // 如果只有一个 Item，会自动变成全大圆角
+        input(
+          title = "Device Name",
+          value = deviceName,
+          onValueChange = { deviceName = it },
+          icon = Icons.Default.Edit,
+        )
+      }
 
-            // Group 3: Sound (演示 Slider 和 Navigation)
-            PreferenceGroup(title = "Sound & Vibration") {
-                slider(
-                    title = "Media Volume",
-                    value = volume,
-                    onValueChange = { volume = it },
-                    icon = Icons.AutoMirrored.Filled.VolumeUp
-                )
+      // Group 3: Sound (演示 Slider 和 Navigation)
+      PreferenceGroup(title = "Sound & Vibration") {
+        slider(
+          title = "Media Volume",
+          value = volume,
+          onValueChange = { volume = it },
+          icon = Icons.AutoMirrored.Filled.VolumeUp,
+        )
 
-                navigation(
-                    title = "Phone Ringtone",
-                    valueText = "Pixel Sound",
-                    icon = Icons.Default.MusicNote,
-                    onClick = {}
-                )
-            }
+        navigation(
+          title = "Phone Ringtone",
+          valueText = "Pixel Sound",
+          icon = Icons.Default.MusicNote,
+          onClick = {},
+        )
+      }
 
-            Spacer(modifier = Modifier.height(32.dp))
-        }
+      Spacer(modifier = Modifier.height(32.dp))
     }
+  }
 }

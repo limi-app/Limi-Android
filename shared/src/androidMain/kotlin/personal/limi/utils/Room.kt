@@ -13,11 +13,16 @@ const val limiRoomDB = "limi_room.db"
 
 @Database(entities = [LimiHistoryEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun getLimiHistoryDao(): LimiHistoryDao
+  abstract fun getLimiHistoryDao(): LimiHistoryDao
 }
 
 fun getRoomDatabase(context: Context): AppDatabase {
-    return Room.databaseBuilder(
-        context.applicationContext, AppDatabase::class.java, limiRoomDB
-    ).setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
+  return Room.databaseBuilder(
+      context.applicationContext,
+      AppDatabase::class.java,
+      limiRoomDB,
+    )
+    .setDriver(BundledSQLiteDriver())
+    .setQueryCoroutineContext(Dispatchers.IO)
+    .build()
 }

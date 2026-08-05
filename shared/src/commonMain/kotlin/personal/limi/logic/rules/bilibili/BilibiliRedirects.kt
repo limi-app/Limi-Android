@@ -9,7 +9,8 @@ class UnsupportedURLException(message: String) : Exception(message)
 val bilibiliRedirectTargetHost = arrayOf("b23.tv")
 
 // 最终允许的 Host
-val bilibiliRedirectAllowedHost = arrayOf(
+val bilibiliRedirectAllowedHost =
+  arrayOf(
     "www.bilibili.com",
     "bilibili.com",
     "m.bilibili.com",
@@ -23,13 +24,13 @@ val bilibiliRedirectAllowedHost = arrayOf(
     "bangumi.bilibili.com",
     "n.bilibili.com",
     "miniapp.bilibili.com",
-)
+  )
 
 suspend fun processBilibiliRedirectUrl(url: Url): Url {
-    if (url.host.lowercase() !in bilibiliRedirectTargetHost) throw UnsupportedURLException("与 bilibiliRedirectTargetHost 链接不匹配")
-    val redirectsUrl = getRedirectsUrl(url)
-    if (redirectsUrl.host.lowercase() !in bilibiliRedirectAllowedHost) throw UnsupportedURLException(
-        "重定向链接 ${redirectsUrl.host} 与 bilibili.com 链接不匹配"
-    )
-    return processBilibiliNoParamsUrl(redirectsUrl)
+  if (url.host.lowercase() !in bilibiliRedirectTargetHost)
+    throw UnsupportedURLException("与 bilibiliRedirectTargetHost 链接不匹配")
+  val redirectsUrl = getRedirectsUrl(url)
+  if (redirectsUrl.host.lowercase() !in bilibiliRedirectAllowedHost)
+    throw UnsupportedURLException("重定向链接 ${redirectsUrl.host} 与 bilibili.com 链接不匹配")
+  return processBilibiliNoParamsUrl(redirectsUrl)
 }

@@ -53,137 +53,166 @@ import personal.limi.utils.openUrl
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 fun OSSLicense(uniqueId: String, finish: () -> Unit) {
-    var libraries by remember { mutableStateOf<Libs?>(null) }
-    LaunchedEffect(Unit) {
-        val json = Res.readBytes("files/aboutlibraries.json").decodeToString()
-        libraries = Libs.Builder().withJson(json).build()
+  var libraries by remember { mutableStateOf<Libs?>(null) }
+  LaunchedEffect(Unit) {
+    val json = Res.readBytes("files/aboutlibraries.json").decodeToString()
+    libraries = Libs.Builder().withJson(json).build()
+  }
+  val library by
+    remember(libraries) {
+      derivedStateOf {
+        libraries?.libraries?.find { it.uniqueId == uniqueId }
+      }
     }
-    val library by remember(libraries) {
-        derivedStateOf {
-            libraries?.libraries?.find { it.uniqueId == uniqueId }
-        }
-    }
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val listState = rememberLazyListState()
-    val layoutDirection = LocalLayoutDirection.current
-    val context = LocalContext.current
+  val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+  val listState = rememberLazyListState()
+  val layoutDirection = LocalLayoutDirection.current
+  val context = LocalContext.current
 
-    if (libraries != null && library == null) {
-        finish()
-        return
-    }
+  if (libraries != null && library == null) {
+    finish()
+    return
+  }
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(Res.string.open_source_license)) },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                navigationIcon = {
-                    IconButton(onClick = finish) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(Res.string.back)
-                        )
-                    }
-                },
+  Scaffold(
+    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = {
+      TopAppBar(
+        title = { Text(text = stringResource(Res.string.open_source_license)) },
+        scrollBehavior = scrollBehavior,
+        colors =
+          TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+          ),
+        navigationIcon = {
+          IconButton(onClick = finish) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+              contentDescription = stringResource(Res.string.back),
             )
-        }) { innerPadding ->
-        library?.let {
-            LazyColumn(
-                state = listState, modifier = Modifier.fillMaxSize().padding(
-                        start = innerPadding.calculateStartPadding(layoutDirection),
-                        end = innerPadding.calculateEndPadding(layoutDirection),
-                        top = innerPadding.calculateTopPadding(),
-                    ).padding(horizontal = 16.dp)
+          }
+        },
+      )
+    },
+  ) { innerPadding ->
+    library?.let {
+      LazyColumn(
+        state = listState,
+        modifier =
+          Modifier.fillMaxSize()
+            .padding(
+              start = innerPadding.calculateStartPadding(layoutDirection),
+              end = innerPadding.calculateEndPadding(layoutDirection),
+              top = innerPadding.calculateTopPadding(),
+            )
+            .padding(horizontal = 16.dp),
+      ) {
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+        item {
+          val url =
+            when {
+              library!!.website != null -> library!!.website.toString()
+              else -> ""
+            }
+          if (url.isNotEmpty())
+            Card(
+              modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(bottom = 16.dp),
+              colors =
+                CardDefaults.cardColors(
+                  containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ),
+              border = BorderStroke(0.dp, MaterialTheme.colorScheme.secondaryContainer),
+              onClick = {
+                if (url.isNotEmpty()) context.openUrl(url)
+              },
             ) {
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item {
-                    val url = when {
-                        library!!.website != null -> library!!.website.toString()
-                        else -> ""
-                    }
-                    if (url.isNotEmpty()) Card(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(bottom = 16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                        border = BorderStroke(0.dp, MaterialTheme.colorScheme.secondaryContainer),
-                        onClick = {
-                            if (url.isNotEmpty()) context.openUrl(url)
-                        }) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Link,
-                                contentDescription = stringResource(Res.string.open_source_license),
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                modifier = Modifier.padding(end = 6.dp)
-                            )
-                            Text(
-                                text = url, style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    fontSize = 14.sp
-                                )
-                            )
-                        }
-                    }
-                }
-                item {
-                    val url = when {
-                        library!!.scm?.url != null && library!!.scm?.url.toString() != library!!.website.toString() -> library!!.scm?.url.toString()
-                        else -> ""
-                    }
-                    if (url.isNotEmpty()) Card(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(bottom = 16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                        border = BorderStroke(0.dp, MaterialTheme.colorScheme.secondaryContainer),
-                        onClick = {
-                            if (url.isNotEmpty()) context.openUrl(url)
-                        }) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Link,
-                                contentDescription = stringResource(Res.string.open_source_license),
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                modifier = Modifier.padding(end = 6.dp)
-                            )
-                            Text(
-                                text = url, style = TextStyle(
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    fontSize = 14.sp
-                                )
-                            )
-                        }
-                    }
-                }
-                library!!.licenses.forEach { license ->
-                    item {
-                        if (!license.licenseContent.isNullOrEmpty()) SelectionContainer {
-                            Text(
-                                text = license.licenseContent ?: "",
-                                style = typography.bodyMedium,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                        } else if (license.name.isNotEmpty()) SelectionContainer {
-                            Text(
-                                text = license.name,
-                                style = typography.bodyMedium,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                        }
-                    }
-                }
-
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding())) }
+              Row(
+                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Icon(
+                  imageVector = Icons.Outlined.Link,
+                  contentDescription = stringResource(Res.string.open_source_license),
+                  tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                  modifier = Modifier.padding(end = 6.dp),
+                )
+                Text(
+                  text = url,
+                  style =
+                    TextStyle(
+                      color = MaterialTheme.colorScheme.onSecondaryContainer,
+                      fontSize = 14.sp,
+                    ),
+                )
+              }
             }
         }
+        item {
+          val url =
+            when {
+              library!!.scm?.url != null &&
+                library!!.scm?.url.toString() != library!!.website.toString() ->
+                library!!.scm?.url.toString()
+              else -> ""
+            }
+          if (url.isNotEmpty())
+            Card(
+              modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(bottom = 16.dp),
+              colors =
+                CardDefaults.cardColors(
+                  containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ),
+              border = BorderStroke(0.dp, MaterialTheme.colorScheme.secondaryContainer),
+              onClick = {
+                if (url.isNotEmpty()) context.openUrl(url)
+              },
+            ) {
+              Row(
+                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Icon(
+                  imageVector = Icons.Outlined.Link,
+                  contentDescription = stringResource(Res.string.open_source_license),
+                  tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                  modifier = Modifier.padding(end = 6.dp),
+                )
+                Text(
+                  text = url,
+                  style =
+                    TextStyle(
+                      color = MaterialTheme.colorScheme.onSecondaryContainer,
+                      fontSize = 14.sp,
+                    ),
+                )
+              }
+            }
+        }
+        library!!.licenses.forEach { license ->
+          item {
+            if (!license.licenseContent.isNullOrEmpty())
+              SelectionContainer {
+                Text(
+                  text = license.licenseContent ?: "",
+                  style = typography.bodyMedium,
+                  modifier = Modifier.padding(bottom = 16.dp),
+                )
+              }
+            else if (license.name.isNotEmpty())
+              SelectionContainer {
+                Text(
+                  text = license.name,
+                  style = typography.bodyMedium,
+                  modifier = Modifier.padding(bottom = 16.dp),
+                )
+              }
+          }
+        }
+
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+        item { Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding())) }
+      }
     }
+  }
 }

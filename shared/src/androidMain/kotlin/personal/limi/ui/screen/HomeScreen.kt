@@ -71,6 +71,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.darkokoa.pangu.Pangu
 import dev.vicart.compose.material.symbols.MaterialSymbols
 import dev.vicart.compose.material.symbols.OutlinedSymbol
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import limi.shared.generated.resources.Res
 import limi.shared.generated.resources.app_name
 import limi.shared.generated.resources.from_text
@@ -82,198 +85,214 @@ import personal.limi.ui.HistoryDetailActivity
 import personal.limi.ui.MainViewModel
 import personal.limi.ui.components.preference.PreferenceGroup
 import personal.limi.ui.components.preference.navigation
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 @Preview
 fun HomeScreen(viewModel: MainViewModel = viewModel { MainViewModel() }) {
-    val listState = rememberLazyListState()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val fabVisible by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset <= 0
-        }
+  val listState = rememberLazyListState()
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+  val fabVisible by remember {
+    derivedStateOf {
+      listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset <= 0
     }
-    val focusRequester = remember { FocusRequester() }
-    val context = LocalContext.current
-    val layoutDirection = LocalLayoutDirection.current
-    val historyList by viewModel.historyListStateFlow.collectAsState()
+  }
+  val focusRequester = remember { FocusRequester() }
+  val context = LocalContext.current
+  val layoutDirection = LocalLayoutDirection.current
+  val historyList by viewModel.historyListStateFlow.collectAsState()
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            LargeTopAppBar(
-                title = { Text(text = stringResource(Res.string.app_name)) },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
-            )
-        },
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = innerPadding.calculateStartPadding(layoutDirection),
-                    end = innerPadding.calculateEndPadding(layoutDirection),
-                    top = innerPadding.calculateTopPadding(),
-                )
-        ) {
-            LazyColumn(
-                state = listState, modifier = Modifier.fillMaxSize()
-            ) {
-                // 按日期分组显示历史记录
-                val groupedHistory = historyList.groupBy {
-                    // 提取日期部分 (YYYY-MM-DD)
-                    it.datetime.substringBefore("T")
-                }
-                val locale = context.resources.configuration.locales[0]
+  Scaffold(
+    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = {
+      LargeTopAppBar(
+        title = { Text(text = stringResource(Res.string.app_name)) },
+        scrollBehavior = scrollBehavior,
+        colors =
+          TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+          ),
+      )
+    },
+  ) { innerPadding ->
+    Box(
+      modifier =
+        Modifier.fillMaxSize()
+          .padding(
+            start = innerPadding.calculateStartPadding(layoutDirection),
+            end = innerPadding.calculateEndPadding(layoutDirection),
+            top = innerPadding.calculateTopPadding(),
+          )
+    ) {
+      LazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        // 按日期分组显示历史记录
+        val groupedHistory = historyList.groupBy {
+          // 提取日期部分 (YYYY-MM-DD)
+          it.datetime.substringBefore("T")
+        }
+        val locale = context.resources.configuration.locales[0]
 
-                groupedHistory.forEach { (date, histories) ->
-                    val localDate = LocalDate.parse(date)
-                    val formatter =
-                        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)
-                    val formattedDate = Pangu.spacingText(localDate.format(formatter))
-                    item {
-                        PreferenceGroup(title = formattedDate) {
-                            histories.forEach { history ->
-                                val timePart =
-                                    history.datetime.substringAfter("T").substringBeforeLast(".")
-                                navigation(
-                                    title = timePart, summary = history.processedUrl, onClick = {
-                                        val intent = Intent(
-                                            context, HistoryDetailActivity::class.java
-                                        ).apply {
-                                            putExtra("history_id", history.id)
-                                            putExtra("history_origin_url", history.originUrl)
-                                            putExtra("history_processed_url", history.processedUrl)
-                                            putExtra("history_datetime", history.datetime)
-                                            flags =
-                                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                        }
-                                        context.startActivity(intent)
-                                    })
-                            }
-                        }
-                    }
-                }
-
-                if (historyList.isEmpty()) item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(start = 16.dp, end = 16.dp, top = 64.dp, bottom = 64.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.no_history),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+        groupedHistory.forEach { (date, histories) ->
+          val localDate = LocalDate.parse(date)
+          val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)
+          val formattedDate = Pangu.spacingText(localDate.format(formatter))
+          item {
+            PreferenceGroup(title = formattedDate) {
+              histories.forEach { history ->
+                val timePart = history.datetime.substringAfter("T").substringBeforeLast(".")
+                navigation(
+                  title = timePart,
+                  summary = history.processedUrl,
+                  onClick = {
+                    val intent =
+                      Intent(
+                          context,
+                          HistoryDetailActivity::class.java,
                         )
-                    }
-                } else item { Spacer(Modifier.height(8.dp)) }
-            }
-
-            val fromText = stringResource(Res.string.from_text)
-            val scanQRCode = stringResource(Res.string.scan_qrcode)
-            val selectFromGallery = stringResource(Res.string.select_from_gallery)
-
-            val items = listOf(
-                MaterialSymbols.DRIVE_FILE_RENAME_OUTLINE to fromText,
-                MaterialSymbols.QR_CODE_SCANNER to scanQRCode,
-                MaterialSymbols.ADD_PHOTO_ALTERNATE to selectFromGallery
-            )
-
-            var fabMenuExpanded by rememberSaveable { mutableStateOf(false) }
-
-            BackHandler(fabMenuExpanded) { fabMenuExpanded = false }
-
-            FloatingActionButtonMenu(
-                modifier = Modifier.align(Alignment.BottomEnd),
-                expanded = fabMenuExpanded,
-                button = {
-                    TooltipBox(
-                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                            if (fabMenuExpanded) TooltipAnchorPosition.Start else TooltipAnchorPosition.Above
-                        ),
-                        tooltip = { PlainTooltip { Text("Toggle menu") } },
-                        state = rememberTooltipState(),
-                    ) {
-                        ToggleFloatingActionButton(
-                            modifier = Modifier
-                                .semantics {
-                                    traversalIndex = -1f
-                                    stateDescription =
-                                        if (fabMenuExpanded) "Expanded" else "Collapsed"
-                                    contentDescription = "Toggle menu"
-                                }
-                                .animateFloatingActionButton(
-                                    visible = fabVisible || fabMenuExpanded,
-                                    alignment = Alignment.Center,
-                                )
-                                .focusRequester(focusRequester),
-                            checked = fabMenuExpanded,
-                            onCheckedChange = { fabMenuExpanded = !fabMenuExpanded },
-                        ) {
-                            val imageVector by remember {
-                                derivedStateOf {
-                                    if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.Add
-                                }
-                            }
-                            Icon(
-                                painter = rememberVectorPainter(imageVector),
-                                contentDescription = null,
-                                modifier = Modifier.animateIcon({ checkedProgress }),
-                            )
+                        .apply {
+                          putExtra("history_id", history.id)
+                          putExtra("history_origin_url", history.originUrl)
+                          putExtra("history_processed_url", history.processedUrl)
+                          putExtra("history_datetime", history.datetime)
+                          flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                         }
-                    }
-                },
-            ) {
-                val pickMedia = rememberLauncherForActivityResult(
-                    ActivityResultContracts.PickVisualMedia()
-                ) { uri ->
-                    viewModel.startSelectFromGallery(context, uri)
-                }
-                items.forEachIndexed { i, item ->
-                    FloatingActionButtonMenuItem(
-                        modifier = Modifier
-                            .semantics {
-                                isTraversalGroup = true
-                                if (i == items.size - 1) customActions = listOf(
-                                    CustomAccessibilityAction(
-                                        label = "Close menu",
-                                        action = {
-                                            fabMenuExpanded = false
-                                            true
-                                        },
-                                    )
-                                )
-                            }
-                            .then(if (i == 0) Modifier.onKeyEvent {
-                                if (it.type == KeyEventType.KeyDown && (it.key == Key.DirectionUp || (it.isShiftPressed && it.key == Key.Tab))) {
-                                    focusRequester.requestFocus()
-                                    return@onKeyEvent true
-                                }
-                                return@onKeyEvent false
-                            } else Modifier),
-                        onClick = {
-                            fabMenuExpanded = false
-                            when (item.second) {
-                                fromText -> viewModel.startSharePanel(context)
-                                scanQRCode -> viewModel.startScanQRCode(context)
-                                selectFromGallery -> pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                            }
-                        },
-                        icon = { OutlinedSymbol(item.first, weight = FontWeight.Normal) },
-                        text = { Text(text = item.second) },
-                    )
-                }
+                    context.startActivity(intent)
+                  },
+                )
+              }
             }
+          }
         }
+
+        if (historyList.isEmpty())
+          item {
+            Box(
+              modifier =
+                Modifier.fillMaxSize()
+                  .padding(start = 16.dp, end = 16.dp, top = 64.dp, bottom = 64.dp),
+              contentAlignment = Alignment.Center,
+            ) {
+              Text(
+                text = stringResource(Res.string.no_history),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+        else item { Spacer(Modifier.height(8.dp)) }
+      }
+
+      val fromText = stringResource(Res.string.from_text)
+      val scanQRCode = stringResource(Res.string.scan_qrcode)
+      val selectFromGallery = stringResource(Res.string.select_from_gallery)
+
+      val items =
+        listOf(
+          MaterialSymbols.DRIVE_FILE_RENAME_OUTLINE to fromText,
+          MaterialSymbols.QR_CODE_SCANNER to scanQRCode,
+          MaterialSymbols.ADD_PHOTO_ALTERNATE to selectFromGallery,
+        )
+
+      var fabMenuExpanded by rememberSaveable { mutableStateOf(false) }
+
+      BackHandler(fabMenuExpanded) { fabMenuExpanded = false }
+
+      FloatingActionButtonMenu(
+        modifier = Modifier.align(Alignment.BottomEnd),
+        expanded = fabMenuExpanded,
+        button = {
+          TooltipBox(
+            positionProvider =
+              TooltipDefaults.rememberTooltipPositionProvider(
+                if (fabMenuExpanded) TooltipAnchorPosition.Start else TooltipAnchorPosition.Above
+              ),
+            tooltip = { PlainTooltip { Text("Toggle menu") } },
+            state = rememberTooltipState(),
+          ) {
+            ToggleFloatingActionButton(
+              modifier =
+                Modifier.semantics {
+                    traversalIndex = -1f
+                    stateDescription = if (fabMenuExpanded) "Expanded" else "Collapsed"
+                    contentDescription = "Toggle menu"
+                  }
+                  .animateFloatingActionButton(
+                    visible = fabVisible || fabMenuExpanded,
+                    alignment = Alignment.Center,
+                  )
+                  .focusRequester(focusRequester),
+              checked = fabMenuExpanded,
+              onCheckedChange = { fabMenuExpanded = !fabMenuExpanded },
+            ) {
+              val imageVector by remember {
+                derivedStateOf {
+                  if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.Add
+                }
+              }
+              Icon(
+                painter = rememberVectorPainter(imageVector),
+                contentDescription = null,
+                modifier = Modifier.animateIcon({ checkedProgress }),
+              )
+            }
+          }
+        },
+      ) {
+        val pickMedia =
+          rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            viewModel.startSelectFromGallery(context, uri)
+          }
+        items.forEachIndexed { i, item ->
+          FloatingActionButtonMenuItem(
+            modifier =
+              Modifier.semantics {
+                  isTraversalGroup = true
+                  if (i == items.size - 1)
+                    customActions =
+                      listOf(
+                        CustomAccessibilityAction(
+                          label = "Close menu",
+                          action = {
+                            fabMenuExpanded = false
+                            true
+                          },
+                        )
+                      )
+                }
+                .then(
+                  if (i == 0)
+                    Modifier.onKeyEvent {
+                      if (
+                        it.type == KeyEventType.KeyDown &&
+                          (it.key == Key.DirectionUp || (it.isShiftPressed && it.key == Key.Tab))
+                      ) {
+                        focusRequester.requestFocus()
+                        return@onKeyEvent true
+                      }
+                      return@onKeyEvent false
+                    }
+                  else Modifier
+                ),
+            onClick = {
+              fabMenuExpanded = false
+              when (item.second) {
+                fromText -> viewModel.startSharePanel(context)
+                scanQRCode -> viewModel.startScanQRCode(context)
+                selectFromGallery ->
+                  pickMedia.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                  )
+              }
+            },
+            icon = { OutlinedSymbol(item.first, weight = FontWeight.Normal) },
+            text = { Text(text = item.second) },
+          )
+        }
+      }
     }
+  }
 }
