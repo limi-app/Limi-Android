@@ -31,7 +31,6 @@ class SharePanelActivity : ComponentActivity() {
         LimiTheme {
           val viewModel: SharePanelViewModel = viewModel()
           if (!sharedText.isNullOrBlank()) {
-            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
             viewModel.initializeWithText(sharedText)
           } else if (sharedImageUri != null) {
             viewModel.initializeWithImage(this@SharePanelActivity, sharedImageUri)
