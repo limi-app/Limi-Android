@@ -10,5 +10,5 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.androidx.room) apply false
     alias(libs.plugins.aboutLibraries) apply false
-    id("com.diffplug.spotless") version "8.9.0" apply false
+    id("com.diffplug.spotless") version "8.10.4" apply false
 }
